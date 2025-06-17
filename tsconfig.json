@@ -1,0 +1,30 @@
+{
+  "compilerOptions": {
+    "target": "ES2020",
+    "lib": ["ES2020"],
+    "module": "ESNext",
+    "skipLibCheck": true,
+    "allowJs": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "strict": true,
+    "forceConsistentCasingInFileNames": true,
+    "moduleResolution": "node",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "jsx": "react-jsx",
+    "baseUrl": ".",
+    "paths": {
+      "@xiaohongshu/*": ["./packages/*/src"],
+      "@/*": ["./packages/web/src/*"]
+    }
+  },
+  "references": [
+    { "path": "./packages/logger" },
+    { "path": "./packages/utils" },
+    { "path": "./packages/server" },
+    { "path": "./packages/web" }
+  ],
+  "files": [],
+  "include": []
+}

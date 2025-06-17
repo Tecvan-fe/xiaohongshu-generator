@@ -1,0 +1,88 @@
+---
+description:
+globs:
+alwaysApply: false
+---
+# 项目内源码依赖规范
+
+## 规则概述
+
+项目内的所有包之间的依赖都应该使用源码文件，而不是构建后的 `dist/` 目录文件。这样可以确保：
+
+- 更好的开发体验和调试能力
+- TypeScript 类型信息的完整保留
+- 热重载和实时编译的正常工作
+- 避免构建顺序依赖问题
+
+## 正确的依赖方式
+
+### ✅ 正确示例
+
+在 [package.json](mdc:packages/server/package.json) 中使用 workspace 依赖：
+
+```json
+{
+  "dependencies": {
+    "@xiaohongshu/logger": "workspace:*",
+    "@xiaohongshu/utils": "workspace:*"
+  }
+}
+```
+
+在代码中直接导入源码：
+
+```typescript
+// 正确：直接从源码导入
+import { Logger } from '@xiaohongshu/logger';
+import { validateInput } from '@xiaohongshu/utils';
+
+// 正确：从包的入口文件导入
+import { createLogger } from '@xiaohongshu/logger/src';
+```
+
+### ❌ 错误示例
+
+```typescript
+// 错误：不要从 dist 目录导入
+import { Logger } from '@xiaohongshu/logger/dist/index.js';
+import { validateInput } from '@xiaohongshu/utils/dist/validation.js';
+
+// 错误：不要使用相对路径到 dist 目录
+import { Logger } from '../logger/dist/logger.js';
+```
+
+## TypeScript 配置
+
+在 [tsconfig.json](mdc:tsconfig.json) 中正确配置路径映射：
+
+```json
+{
+  "compilerOptions": {
+    "paths": {
+      "@xiaohongshu/*": ["./packages/*/src"]
+    }
+  }
+}
+```
+
+## 包导出配置
+
+每个包的 [package.json](mdc:packages/logger/package.json) 应该正确配置入口点：
+
+```json
+{
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "exports": {
+    ".": "./src/index.ts",
+    "./src": "./src/index.ts"
+  }
+}
+```
+
+## 构建时注意事项
+
+- `dist/` 目录仅用于最终产品的构建输出
+- 开发阶段和项目内部依赖都应该使用 `src/` 源码
+- 构建脚本应该处理好源码到构建产物的转换
+- 不要将构建产物提交到版本控制系统中

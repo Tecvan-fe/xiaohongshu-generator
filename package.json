@@ -1,0 +1,48 @@
+{
+  "name": "xiaohongshu-generator",
+  "version": "1.0.0",
+  "description": "小红书内容生成器 - 将长文自动转换为小红书图文内容",
+  "private": true,
+  "workspaces": [
+    "packages/*"
+  ],
+  "scripts": {
+    "build": "pnpm -r build",
+    "dev": "pnpm -r --parallel dev",
+    "clean": "pnpm -r clean && rm -rf node_modules/.cache",
+    "lint": "eslint packages/*/src --ext .ts,.tsx",
+    "lint:fix": "eslint packages/*/src --ext .ts,.tsx --fix",
+    "type-check": "pnpm -r exec tsc --noEmit",
+    "dev:web": "pnpm --filter @xiaohongshu/web dev",
+    "dev:server": "pnpm --filter @xiaohongshu/server dev",
+    "build:web": "pnpm --filter @xiaohongshu/web build",
+    "build:server": "pnpm --filter @xiaohongshu/server build",
+    "start": "pnpm --filter @xiaohongshu/server start"
+  },
+  "devDependencies": {
+    "@types/node": "^22.9.0",
+    "@types/pdf-parse": "^1.1.5",
+    "@typescript-eslint/eslint-plugin": "^6.10.0",
+    "@typescript-eslint/parser": "^6.10.0",
+    "eslint": "^8.53.0",
+    "eslint-plugin-react-hooks": "^4.6.0",
+    "eslint-plugin-react-refresh": "^0.4.4",
+    "prettier": "^3.2.5",
+    "tsx": "^4.19.1",
+    "typescript": "^5.4.5"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "pnpm": ">=8.0.0"
+  },
+  "keywords": [
+    "xiaohongshu",
+    "content-generator",
+    "ai",
+    "svg",
+    "react",
+    "typescript"
+  ],
+  "author": "",
+  "license": "MIT"
+}
