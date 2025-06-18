@@ -122,14 +122,14 @@ export const ChatResponseSection: React.FC<ChatResponseSectionProps> = ({
                         </span>
                       </div>
                       <p className="text-sm text-gray-700 line-clamp-3">{paragraph.content}</p>
-                      {paragraph.keywords.length > 0 && (
+                      {paragraph.tags.length > 0 && (
                         <div className="flex flex-wrap gap-1 mt-2">
-                          {paragraph.keywords.slice(0, 3).map((keyword: string, i: number) => (
+                          {paragraph.tags.slice(0, 3).map((tag: string, i: number) => (
                             <span
                               key={i}
                               className="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded"
                             >
-                              {keyword}
+                              #{tag}
                             </span>
                           ))}
                         </div>

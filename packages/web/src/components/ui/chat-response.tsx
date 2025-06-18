@@ -10,6 +10,7 @@ import {
   Loader2,
   Copy,
   Share2,
+  X,
 } from 'lucide-react';
 import { Button } from './button';
 import { Card, CardContent } from './card';
@@ -17,6 +18,8 @@ import { Progress } from './progress';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from './tabs';
 import { CardPreview } from '../CardPreview';
 import type { ProcessedParagraph, TitleOptions, CardData } from '../../types';
+import { AnalysisProgress } from '../AnalysisProgress';
+import { PreviewSection } from '../PreviewSection';
 
 interface ChatResponseProps {
   isAnalyzing: boolean;
@@ -27,6 +30,7 @@ interface ChatResponseProps {
   cards: CardData[];
   onExport: (format: 'markdown' | 'json' | 'images') => void;
   onReset?: () => void;
+  onCancel?: () => void;
 }
 
 export function ChatResponse({
@@ -38,6 +42,7 @@ export function ChatResponse({
   cards,
   onExport,
   onReset,
+  onCancel,
 }: ChatResponseProps) {
   // 计算总体进度
   const getOverallProgress = () => {
@@ -52,6 +57,7 @@ export function ChatResponse({
 
   const progress = getOverallProgress();
   const isComplete = cards.length > 0;
+  const isProcessing = isAnalyzing || isGeneratingTitles || isGeneratingCards;
 
   return (
     <div className="w-full max-w-4xl mx-auto space-y-6">
@@ -118,9 +124,9 @@ export function ChatResponse({
                         ? paragraph.content.substring(0, 150) + '...'
                         : paragraph.content}
                     </p>
-                    {paragraph.keywords.length > 0 && (
+                    {paragraph.keyPoints && paragraph.keyPoints.length > 0 && (
                       <div className="flex flex-wrap gap-2">
-                        {paragraph.keywords.slice(0, 5).map((keyword, i) => (
+                        {paragraph.keyPoints.slice(0, 5).map((keyword, i) => (
                           <span
                             key={i}
                             className="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded-md"
@@ -216,6 +222,16 @@ export function ChatResponse({
                 {!isGeneratingCards && cards.length > 0 && (
                   <p className="text-sm text-gray-600">
                     成功生成 {cards.length} 张精美的小红书图文卡片
+                    {cards.length >= 3 && cards.length <= 6 && (
+                      <span className="ml-2 text-xs bg-green-100 text-green-700 px-2 py-1 rounded-full">
+                        ✨ 数量优化完成
+                      </span>
+                    )}
+                  </p>
+                )}
+                {isGeneratingCards && (
+                  <p className="text-sm text-gray-600">
+                    正在创作小红书风格内容 (目标: 3-6张精美卡片)
                   </p>
                 )}
               </div>
@@ -301,6 +317,37 @@ export function ChatResponse({
             )}
           </CardContent>
         </Card>
+      )}
+
+      {/* 分析进度 */}
+      {isProcessing && (
+        <div className="mb-8">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-2xl font-bold text-gray-800 flex items-center gap-3">
+              <Brain className="h-6 w-6 text-blue-600" />
+              AI 智能分析中...
+            </h2>
+            {onCancel && (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={onCancel}
+                className="flex items-center gap-2 text-gray-600 hover:text-red-600 hover:border-red-300"
+              >
+                <X className="h-4 w-4" />
+                取消
+              </Button>
+            )}
+          </div>
+          <AnalysisProgress
+            isAnalyzing={isAnalyzing}
+            isGeneratingTitles={isGeneratingTitles}
+            isGeneratingCards={isGeneratingCards}
+            paragraphs={paragraphs}
+            titles={titles}
+            cards={cards}
+          />
+        </div>
       )}
     </div>
   );

@@ -2,8 +2,6 @@
 title: Node.js HTTP Server
 description: Learn how to use the AI SDK in a Node.js HTTP server
 tags: ['api servers', 'streaming']
-globs: *.ts
-alwaysApply: false
 ---
 
 # Node.js HTTP Server
@@ -56,7 +54,7 @@ import { createServer } from 'http';
 createServer(async (req, res) => {
   // immediately start streaming the response
   pipeDataStreamToResponse(res, {
-    execute: async dataStreamWriter => {
+    execute: async (dataStreamWriter) => {
       dataStreamWriter.writeData('initialized call');
 
       const result = streamText({
@@ -66,7 +64,7 @@ createServer(async (req, res) => {
 
       result.mergeIntoDataStream(dataStreamWriter);
     },
-    onError: error => {
+    onError: (error) => {
       // Error messages are masked by default for security reasons.
       // If you want to expose the error message to the client, you can do so here:
       return error instanceof Error ? error.message : String(error);
@@ -99,9 +97,11 @@ createServer(async (req, res) => {
 - Streaming not working when [proxied](/docs/troubleshooting/streaming-not-working-when-proxied)
 
 ---
+
 title: Express
 description: Learn how to use the AI SDK in an Express server
 tags: ['api servers', 'streaming']
+
 ---
 
 # Express
@@ -162,7 +162,7 @@ const app = express();
 app.post('/stream-data', async (req: Request, res: Response) => {
   // immediately start streaming the response
   pipeDataStreamToResponse(res, {
-    execute: async dataStreamWriter => {
+    execute: async (dataStreamWriter) => {
       dataStreamWriter.writeData('initialized call');
 
       const result = streamText({
@@ -172,7 +172,7 @@ app.post('/stream-data', async (req: Request, res: Response) => {
 
       result.mergeIntoDataStream(dataStreamWriter);
     },
-    onError: error => {
+    onError: (error) => {
       // Error messages are masked by default for security reasons.
       // If you want to expose the error message to the client, you can do so here:
       return error instanceof Error ? error.message : String(error);
@@ -215,9 +215,11 @@ app.listen(8080, () => {
 - Streaming not working when [proxied](/docs/troubleshooting/streaming-not-working-when-proxied)
 
 ---
+
 title: Hono
 description: Example of using the AI SDK in a Hono server.
 tags: ['api servers', 'streaming']
+
 ---
 
 # Hono
@@ -252,7 +254,7 @@ import { stream } from 'hono/streaming';
 
 const app = new Hono();
 
-app.post('/', async c => {
+app.post('/', async (c) => {
   const result = streamText({
     model: openai('gpt-4o'),
     prompt: 'Invent a new holiday and describe its traditions.',
@@ -262,7 +264,7 @@ app.post('/', async c => {
   c.header('X-Vercel-AI-Data-Stream', 'v1');
   c.header('Content-Type', 'text/plain; charset=utf-8');
 
-  return stream(c, stream => stream.pipe(result.toDataStream()));
+  return stream(c, (stream) => stream.pipe(result.toDataStream()));
 });
 
 serve({ fetch: app.fetch, port: 8080 });
@@ -281,10 +283,10 @@ import { stream } from 'hono/streaming';
 
 const app = new Hono();
 
-app.post('/stream-data', async c => {
+app.post('/stream-data', async (c) => {
   // immediately start streaming the response
   const dataStream = createDataStream({
-    execute: async dataStreamWriter => {
+    execute: async (dataStreamWriter) => {
       dataStreamWriter.writeData('initialized call');
 
       const result = streamText({
@@ -294,7 +296,7 @@ app.post('/stream-data', async c => {
 
       result.mergeIntoDataStream(dataStreamWriter);
     },
-    onError: error => {
+    onError: (error) => {
       // Error messages are masked by default for security reasons.
       // If you want to expose the error message to the client, you can do so here:
       return error instanceof Error ? error.message : String(error);
@@ -305,9 +307,7 @@ app.post('/stream-data', async c => {
   c.header('X-Vercel-AI-Data-Stream', 'v1');
   c.header('Content-Type', 'text/plain; charset=utf-8');
 
-  return stream(c, stream =>
-    stream.pipe(dataStream.pipeThrough(new TextEncoderStream())),
-  );
+  return stream(c, (stream) => stream.pipe(dataStream.pipeThrough(new TextEncoderStream())));
 });
 
 serve({ fetch: app.fetch, port: 8080 });
@@ -326,7 +326,7 @@ import { stream } from 'hono/streaming';
 
 const app = new Hono();
 
-app.post('/', async c => {
+app.post('/', async (c) => {
   const result = streamText({
     model: openai('gpt-4o'),
     prompt: 'Invent a new holiday and describe its traditions.',
@@ -334,7 +334,7 @@ app.post('/', async c => {
 
   c.header('Content-Type', 'text/plain; charset=utf-8');
 
-  return stream(c, stream => stream.pipe(result.textStream));
+  return stream(c, (stream) => stream.pipe(result.textStream));
 });
 
 serve({ fetch: app.fetch, port: 8080 });
@@ -345,9 +345,11 @@ serve({ fetch: app.fetch, port: 8080 });
 - Streaming not working when [proxied](/docs/troubleshooting/streaming-not-working-when-proxied)
 
 ---
+
 title: Fastify
 description: Learn how to use the AI SDK in a Fastify server
 tags: ['api servers', 'streaming']
+
 ---
 
 # Fastify
@@ -410,7 +412,7 @@ const fastify = Fastify({ logger: true });
 fastify.post('/stream-data', async function (request, reply) {
   // immediately start streaming the response
   const dataStream = createDataStream({
-    execute: async dataStreamWriter => {
+    execute: async (dataStreamWriter) => {
       dataStreamWriter.writeData('initialized call');
 
       const result = streamText({
@@ -420,7 +422,7 @@ fastify.post('/stream-data', async function (request, reply) {
 
       result.mergeIntoDataStream(dataStreamWriter);
     },
-    onError: error => {
+    onError: (error) => {
       // Error messages are masked by default for security reasons.
       // If you want to expose the error message to the client, you can do so here:
       return error instanceof Error ? error.message : String(error);
@@ -467,9 +469,11 @@ fastify.listen({ port: 8080 });
 - Streaming not working when [proxied](/docs/troubleshooting/streaming-not-working-when-proxied)
 
 ---
+
 title: Nest.js
 description: Learn how to use the AI SDK in a Nest.js server
 tags: ['api servers', 'streaming']
+
 ---
 
 # Nest.js
@@ -521,7 +525,7 @@ export class AppController {
   @Post('/stream-data')
   async streamData(@Res() res: Response) {
     pipeDataStreamToResponse(res, {
-      execute: async dataStreamWriter => {
+      execute: async (dataStreamWriter) => {
         dataStreamWriter.writeData('initialized call');
 
         const result = streamText({
@@ -531,7 +535,7 @@ export class AppController {
 
         result.mergeIntoDataStream(dataStreamWriter);
       },
-      onError: error => {
+      onError: (error) => {
         // Error messages are masked by default for security reasons.
         // If you want to expose the error message to the client, you can do so here:
         return error instanceof Error ? error.message : String(error);
@@ -570,8 +574,10 @@ export class AppController {
 - Streaming not working when [proxied](/docs/troubleshooting/streaming-not-working-when-proxied)
 
 ---
+
 title: AI SDK by Vercel
 description: The AI SDK is the TypeScript toolkit for building AI applications and agents with React, Next.js, Vue, Svelte, Node.js, and more.
+
 ---
 
 # AI SDK
@@ -647,8 +653,10 @@ Based on the above documentation, answer the following:
 ```
 
 ---
+
 title: AI SDK 5 Alpha
 description: Get started with the Alpha version of AI SDK 5.
+
 ---
 
 # Announcing AI SDK 5 Alpha
@@ -844,15 +852,13 @@ export default function Chat() {
 
   return (
     <div>
-      {messages.map(message => {
+      {messages.map((message) => {
         const { metadata } = message;
         return (
           <div key={message.id} className="whitespace-pre-wrap">
             {metadata?.duration && <div>Duration: {metadata.duration}ms</div>}
             {metadata?.model && <div>Model: {metadata.model}</div>}
-            {metadata?.totalTokens && (
-              <div>Total tokens: {metadata.totalTokens}</div>
-            )}
+            {metadata?.totalTokens && <div>Total tokens: {metadata.totalTokens}</div>}
           </div>
         );
       })}
@@ -867,7 +873,7 @@ The UI Message Stream enables streaming any content parts from the server to the
 
 ```ts
 const stream = createUIMessageStream({
-  execute: writer => {
+  execute: (writer) => {
     // stream custom sources
     writer.write({
       type: 'source',
@@ -894,7 +900,7 @@ You can create and stream custom data parts on the server:
 ```tsx
 // On the server
 const stream = createUIMessageStream({
-  execute: writer => {
+  execute: (writer) => {
     // Initial update
     writer.write({
       type: 'data-weather', // Custom type
@@ -917,7 +923,7 @@ On the client, you can render these parts with full type safety:
 ```tsx
 {
   message.parts
-    .filter(part => part.type === 'data-weather') // type-safe
+    .filter((part) => part.type === 'data-weather') // type-safe
     .map((part, index) => (
       <Weather
         key={index}
@@ -1030,8 +1036,10 @@ const result = generateText({
 These agentic controls form the foundation for building more reliable, controllable AI systems that can tackle complex problems while remaining within well-defined constraints.
 
 ---
+
 title: Overview
 description: An overview of AI SDK Core.
+
 ---
 
 # AI SDK Core
@@ -1064,8 +1072,10 @@ These functions take a standardized approach to setting up [prompts](./prompts) 
 Please check out the [AI SDK Core API Reference](/docs/reference/ai-sdk-core) for more details on each function.
 
 ---
+
 title: Generating Text
 description: Learn how to generate text with the AI SDK.
+
 ---
 
 # Generating and Streaming Text
@@ -1100,9 +1110,7 @@ import { generateText } from 'ai';
 
 const { text } = await generateText({
   model: yourModel,
-  system:
-    'You are a professional writer. ' +
-    'You write simple, clear, and concise content.',
+  system: 'You are a professional writer. ' + 'You write simple, clear, and concise content.',
   prompt: `Summarize the following article in 3-5 sentences: ${article}`,
 });
 ```
@@ -1364,7 +1372,7 @@ const upperCaseTransform =
           // for text-delta chunks, convert the text to uppercase:
           chunk.type === 'text-delta'
             ? { ...chunk, textDelta: chunk.textDelta.toUpperCase() }
-            : chunk,
+            : chunk
         );
       },
     });
@@ -1554,46 +1562,48 @@ You can see `generateText` and `streamText` in action using various frameworks i
 ### `generateText`
 
 <ExampleLinks
-  examples={[
-    {
-      title: 'Learn to generate text in Node.js',
-      link: '/examples/node/generating-text/generate-text',
-    },
-    {
-      title:
-        'Learn to generate text in Next.js with Route Handlers (AI SDK UI)',
-      link: '/examples/next-pages/basics/generating-text',
-    },
-    {
-      title:
-        'Learn to generate text in Next.js with Server Actions (AI SDK RSC)',
-      link: '/examples/next-app/basics/generating-text',
-    },
-  ]}
+examples={[
+{
+title: 'Learn to generate text in Node.js',
+link: '/examples/node/generating-text/generate-text',
+},
+{
+title:
+'Learn to generate text in Next.js with Route Handlers (AI SDK UI)',
+link: '/examples/next-pages/basics/generating-text',
+},
+{
+title:
+'Learn to generate text in Next.js with Server Actions (AI SDK RSC)',
+link: '/examples/next-app/basics/generating-text',
+},
+]}
 />
 
 ### `streamText`
 
 <ExampleLinks
-  examples={[
-    {
-      title: 'Learn to stream text in Node.js',
-      link: '/examples/node/generating-text/stream-text',
-    },
-    {
-      title: 'Learn to stream text in Next.js with Route Handlers (AI SDK UI)',
-      link: '/examples/next-pages/basics/streaming-text-generation',
-    },
-    {
-      title: 'Learn to stream text in Next.js with Server Actions (AI SDK RSC)',
-      link: '/examples/next-app/basics/streaming-text-generation',
-    },
-  ]}
+examples={[
+{
+title: 'Learn to stream text in Node.js',
+link: '/examples/node/generating-text/stream-text',
+},
+{
+title: 'Learn to stream text in Next.js with Route Handlers (AI SDK UI)',
+link: '/examples/next-pages/basics/streaming-text-generation',
+},
+{
+title: 'Learn to stream text in Next.js with Server Actions (AI SDK RSC)',
+link: '/examples/next-app/basics/streaming-text-generation',
+},
+]}
 />
 
 ---
+
 title: Generating Structured Data
 description: Learn how to generate structured data with the AI SDK.
+
 ---
 
 # Generating Structured Data
@@ -1726,9 +1736,7 @@ const { elementStream } = streamObject({
   output: 'array',
   schema: z.object({
     name: z.string(),
-    class: z
-      .string()
-      .describe('Character class, e.g. warrior, mage, or thief.'),
+    class: z.string().describe('Character class, e.g. warrior, mage, or thief.'),
     description: z.string(),
   }),
   prompt: 'Generate 3 hero descriptions for a fantasy role playing game.',
@@ -1945,48 +1953,50 @@ You can see `generateObject` and `streamObject` in action using various framewor
 ### `generateObject`
 
 <ExampleLinks
-  examples={[
-    {
-      title: 'Learn to generate objects in Node.js',
-      link: '/examples/node/generating-structured-data/generate-object',
-    },
-    {
-      title:
-        'Learn to generate objects in Next.js with Route Handlers (AI SDK UI)',
-      link: '/examples/next-pages/basics/generating-object',
-    },
-    {
-      title:
-        'Learn to generate objects in Next.js with Server Actions (AI SDK RSC)',
-      link: '/examples/next-app/basics/generating-object',
-    },
-  ]}
+examples={[
+{
+title: 'Learn to generate objects in Node.js',
+link: '/examples/node/generating-structured-data/generate-object',
+},
+{
+title:
+'Learn to generate objects in Next.js with Route Handlers (AI SDK UI)',
+link: '/examples/next-pages/basics/generating-object',
+},
+{
+title:
+'Learn to generate objects in Next.js with Server Actions (AI SDK RSC)',
+link: '/examples/next-app/basics/generating-object',
+},
+]}
 />
 
 ### `streamObject`
 
 <ExampleLinks
-  examples={[
-    {
-      title: 'Learn to stream objects in Node.js',
-      link: '/examples/node/streaming-structured-data/stream-object',
-    },
-    {
-      title:
-        'Learn to stream objects in Next.js with Route Handlers (AI SDK UI)',
-      link: '/examples/next-pages/basics/streaming-object-generation',
-    },
-    {
-      title:
-        'Learn to stream objects in Next.js with Server Actions (AI SDK RSC)',
-      link: '/examples/next-app/basics/streaming-object-generation',
-    },
-  ]}
+examples={[
+{
+title: 'Learn to stream objects in Node.js',
+link: '/examples/node/streaming-structured-data/stream-object',
+},
+{
+title:
+'Learn to stream objects in Next.js with Route Handlers (AI SDK UI)',
+link: '/examples/next-pages/basics/streaming-object-generation',
+},
+{
+title:
+'Learn to stream objects in Next.js with Server Actions (AI SDK RSC)',
+link: '/examples/next-app/basics/streaming-object-generation',
+},
+]}
 />
 
 ---
+
 title: Tool Calling
 description: Learn about tool calling and multi-step calls (using maxSteps) with AI SDK Core.
+
 ---
 
 # Tool Calling
@@ -2107,7 +2117,7 @@ const { steps } = await generateText({
 });
 
 // extract all tool calls from the steps:
-const allToolCalls = steps.flatMap(step => step.toolCalls);
+const allToolCalls = steps.flatMap((step) => step.toolCalls);
 ```
 
 ### `onStepFinish` callback
@@ -2313,7 +2323,7 @@ const result = await generateText({
       execute: async ({ location }, { abortSignal }) => {
         return fetch(
           `https://api.weatherapi.com/v1/current.json?q=${location}`,
-          { signal: abortSignal }, // forward the abort signal to fetch
+          { signal: abortSignal } // forward the abort signal to fetch
         );
       },
     }),
@@ -2416,7 +2426,7 @@ const result = streamText({
 });
 
 return result.toDataStreamResponse({
-  getErrorMessage: error => {
+  getErrorMessage: (error) => {
     if (NoSuchToolError.isInstance(error)) {
       return 'The model tried to call a unknown tool.';
     } else if (InvalidToolArgumentsError.isInstance(error)) {
@@ -2459,12 +2469,7 @@ const result = await generateText({
   tools,
   prompt,
 
-  experimental_repairToolCall: async ({
-    toolCall,
-    tools,
-    parameterSchema,
-    error,
-  }) => {
+  experimental_repairToolCall: async ({ toolCall, tools, parameterSchema, error }) => {
     if (NoSuchToolError.isInstance(error)) {
       return null; // do not attempt to fix invalid tool names
     }
@@ -2500,13 +2505,7 @@ const result = await generateText({
   tools,
   prompt,
 
-  experimental_repairToolCall: async ({
-    toolCall,
-    tools,
-    error,
-    messages,
-    system,
-  }) => {
+  experimental_repairToolCall: async ({ toolCall, tools, error, messages, system }) => {
     const result = await generateText({
       model,
       system,
@@ -2539,7 +2538,7 @@ const result = await generateText({
     });
 
     const newToolCall = result.toolCalls.find(
-      newToolCall => newToolCall.toolName === toolCall.toolName,
+      (newToolCall) => newToolCall.toolName === toolCall.toolName
     );
 
     return newToolCall != null
@@ -2603,9 +2602,7 @@ const result = await generateText({
           case 'screenshot': {
             return {
               type: 'image',
-              data: fs
-                .readFileSync('./data/screenshot-editor.png')
-                .toString('base64'),
+              data: fs.readFileSync('./data/screenshot-editor.png').toString('base64'),
             };
           }
           default: {
@@ -2708,10 +2705,7 @@ const mcpClient = await createMCPClient({
 You can also bring your own transport, as long as it implements the `MCPTransport` interface. Below is an example of using the new `StreamableHTTPClientTransport` from MCP's official Typescript SDK:
 
 ```typescript
-import {
-  MCPTransport,
-  experimental_createMCPClient as createMCPClient,
-} from 'ai';
+import { MCPTransport, experimental_createMCPClient as createMCPClient } from 'ai';
 import { StreamableHTTPClientTransport } from '@modelcontextprotocol/sdk/client/streamableHttp';
 
 const url = new URL('http://localhost:3000/mcp');
@@ -2839,25 +2833,27 @@ When you define `schemas`, the client will only pull the explicitly defined tool
 You can see tools in action using various frameworks in the following examples:
 
 <ExampleLinks
-  examples={[
-    {
-      title: 'Learn to use tools in Node.js',
-      link: '/cookbook/node/call-tools',
-    },
-    {
-      title: 'Learn to use tools in Next.js with Route Handlers',
-      link: '/cookbook/next/call-tools',
-    },
-    {
-      title: 'Learn to use MCP tools in Node.js',
-      link: '/cookbook/node/mcp-tools',
-    },
-  ]}
+examples={[
+{
+title: 'Learn to use tools in Node.js',
+link: '/cookbook/node/call-tools',
+},
+{
+title: 'Learn to use tools in Next.js with Route Handlers',
+link: '/cookbook/next/call-tools',
+},
+{
+title: 'Learn to use MCP tools in Node.js',
+link: '/cookbook/node/mcp-tools',
+},
+]}
 />
 
 ---
+
 title: Prompt Engineering
 description: Learn how to develop prompts with AI SDK Core.
+
 ---
 
 # Prompt Engineering
@@ -2900,8 +2896,8 @@ const result = await generateObject({
         date: z
           .string()
           .date()
-          .transform(value => new Date(value)),
-      }),
+          .transform((value) => new Date(value)),
+      })
     ),
   }),
   prompt: 'List 5 important events from the year 2000.',
@@ -2942,8 +2938,10 @@ console.log(result.request.body);
 ```
 
 ---
+
 title: Settings
 description: Learn how to configure the AI SDK.
+
 ---
 
 # Settings
@@ -3074,8 +3072,10 @@ const result = await generateText({
 </Note>
 
 ---
+
 title: Embeddings
 description: Learn how to embed values with the AI SDK.
+
 ---
 
 # Embeddings
@@ -3117,11 +3117,7 @@ import { embedMany } from 'ai';
 // It is sorted in the same order as the input values.
 const { embeddings } = await embedMany({
   model: openai.embedding('text-embedding-3-small'),
-  values: [
-    'sunny day at the beach',
-    'rainy afternoon in the city',
-    'snowy night in the mountains',
-  ],
+  values: ['sunny day at the beach', 'rainy afternoon in the city', 'snowy night in the mountains'],
 });
 ```
 
@@ -3140,9 +3136,7 @@ const { embeddings } = await embedMany({
   values: ['sunny day at the beach', 'rainy afternoon in the city'],
 });
 
-console.log(
-  `cosine similarity: ${cosineSimilarity(embeddings[0], embeddings[1])}`,
-);
+console.log(`cosine similarity: ${cosineSimilarity(embeddings[0], embeddings[1])}`);
 ```
 
 ## Token Usage
@@ -3236,8 +3230,10 @@ Several providers offer embedding models:
 | [Amazon Bedrock](/providers/ai-sdk-providers/amazon-bedrock#embedding-models)             | `amazon.titan-embed-text-v2:0`  | 1024                 |
 
 ---
+
 title: Image Generation
 description: Learn how to generate images with the AI SDK.
+
 ---
 
 # Image Generation
@@ -3526,8 +3522,10 @@ for (const file of result.files) {
 Above are a small subset of the image models supported by the AI SDK providers. For more, see the respective provider documentation.
 
 ---
+
 title: Transcription
 description: Learn how to transcribe audio with the AI SDK.
+
 ---
 
 # Transcription
@@ -3648,10 +3646,7 @@ The error preserves the following information to help you log the issue:
 - `cause`: The cause of the error. You can use this for more detailed error handling.
 
 ```ts
-import {
-  experimental_transcribe as transcribe,
-  NoTranscriptGeneratedError,
-} from 'ai';
+import { experimental_transcribe as transcribe, NoTranscriptGeneratedError } from 'ai';
 import { openai } from '@ai-sdk/openai';
 import { readFile } from 'fs/promises';
 
@@ -3701,8 +3696,10 @@ try {
 Above are a small subset of the transcription models supported by the AI SDK providers. For more, see the respective provider documentation.
 
 ---
+
 title: Speech
 description: Learn how to generate speech from text with the AI SDK.
+
 ---
 
 # Speech
@@ -3819,10 +3816,7 @@ The error preserves the following information to help you log the issue:
 - `cause`: The cause of the error. You can use this for more detailed error handling.
 
 ```ts
-import {
-  experimental_generateSpeech as generateSpeech,
-  AI_NoAudioGeneratedError,
-} from 'ai';
+import { experimental_generateSpeech as generateSpeech, AI_NoAudioGeneratedError } from 'ai';
 import { openai } from '@ai-sdk/openai';
 import { readFile } from 'fs/promises';
 
@@ -3854,8 +3848,10 @@ try {
 Above are a small subset of the speech models supported by the AI SDK providers. For more, see the respective provider documentation.
 
 ---
+
 title: Language Model Middleware
 description: Learn how to use middleware to enhance the behavior of language models
+
 ---
 
 # Language Model Middleware
@@ -4103,7 +4099,7 @@ export const yourRagMiddleware: LanguageModelV1Middleware = {
     const instruction =
       'Use the following information to answer the question:\n' +
       findSources({ text: lastUserMessageText })
-        .map(chunk => JSON.stringify(chunk))
+        .map((chunk) => JSON.stringify(chunk))
         .join('\n');
 
     return addToLastUserMessage({ params, text: instruction });
@@ -4168,8 +4164,10 @@ console.log(text);
 ```
 
 ---
+
 title: Provider & Model Management
 description: Learn how to work with multiple providers and models
+
 ---
 
 # Provider & Model Management
@@ -4290,7 +4288,7 @@ export const customSeparatorRegistry = createProviderRegistry(
     anthropic,
     openai,
   },
-  { separator: ' > ' },
+  { separator: ' > ' }
 );
 ```
 
@@ -4418,7 +4416,7 @@ export const registry = createProviderRegistry(
       },
     }),
   },
-  { separator: ' > ' },
+  { separator: ' > ' }
 );
 
 // usage:
@@ -4426,8 +4424,10 @@ const model = registry.languageModel('anthropic > reasoning');
 ```
 
 ---
+
 title: Error Handling
 description: Learn how to handle errors in the AI SDK Core
+
 ---
 
 # Error Handling
@@ -4507,8 +4507,10 @@ try {
 ```
 
 ---
+
 title: Testing
 description: Learn how to use AI SDK Core mock providers for testing.
+
 ---
 
 # Testing
@@ -4667,14 +4669,16 @@ export async function POST(req: Request) {
         'X-Vercel-AI-Data-Stream': 'v1',
         'Content-Type': 'text/plain; charset=utf-8',
       },
-    },
+    }
   );
 }
 ```
 
 ---
+
 title: Telemetry
 description: Using OpenTelemetry with AI SDK Core
+
 ---
 
 # Telemetry
@@ -4994,8 +4998,10 @@ Tool call spans (`ai.toolCall`) contain the following attributes:
 - `ai.toolCall.result`: the result of the tool call. Only available if the tool call is successful and the result is serializable.
 
 ---
+
 title: Overview
 description: An overview of AI SDK UI.
+
 ---
 
 # AI SDK UI
@@ -5033,8 +5039,10 @@ Here is a comparison of the supported functions across these frameworks:
 Please check out the [AI SDK UI API Reference](/docs/reference/ai-sdk-ui) for more details on each function.
 
 ---
+
 title: Chatbot
 description: Learn how to use the useChat hook.
+
 ---
 
 # Chatbot
@@ -5063,7 +5071,7 @@ export default function Page() {
 
   return (
     <>
-      {messages.map(message => (
+      {messages.map((message) => (
         <div key={message.id}>
           {message.role === 'user' ? 'User: ' : 'AI: '}
           {message.content}
@@ -5138,12 +5146,11 @@ You can use `status` for e.g. the following purposes:
 import { useChat } from '@ai-sdk/react';
 
 export default function Page() {
-  const { messages, input, handleInputChange, handleSubmit, status, stop } =
-    useChat({});
+  const { messages, input, handleInputChange, handleSubmit, status, stop } = useChat({});
 
   return (
     <>
-      {messages.map(message => (
+      {messages.map((message) => (
         <div key={message.id}>
           {message.role === 'user' ? 'User: ' : 'AI: '}
           {message.content}
@@ -5190,12 +5197,11 @@ It can be used to display an error message, disable the submit button, or show a
 import { useChat } from '@ai-sdk/react';
 
 export default function Chat() {
-  const { messages, input, handleInputChange, handleSubmit, error, reload } =
-    useChat({});
+  const { messages, input, handleInputChange, handleSubmit, error, reload } = useChat({});
 
   return (
     <div>
-      {messages.map(m => (
+      {messages.map((m) => (
         <div key={m.id}>
           {m.role}: {m.content}
         </div>
@@ -5211,11 +5217,7 @@ export default function Chat() {
       )}
 
       <form onSubmit={handleSubmit}>
-        <input
-          value={input}
-          onChange={handleInputChange}
-          disabled={error != null}
-        />
+        <input value={input} onChange={handleInputChange} disabled={error != null} />
       </form>
     </div>
   );
@@ -5333,10 +5335,10 @@ const {
     console.log('Token usage:', usage);
     console.log('Finish reason:', finishReason);
   },
-  onError: error => {
+  onError: (error) => {
     console.error('An error occurred:', error);
   },
-  onResponse: response => {
+  onResponse: (response) => {
     console.log('Received HTTP response from server:', response);
   },
 });
@@ -5379,14 +5381,14 @@ export default function Chat() {
   const { messages, input, handleInputChange, handleSubmit } = useChat();
   return (
     <div>
-      {messages.map(m => (
+      {messages.map((m) => (
         <div key={m.id}>
           {m.role}: {m.content}
         </div>
       ))}
 
       <form
-        onSubmit={event => {
+        onSubmit={(event) => {
           handleSubmit(event, {
             body: {
               customKey: 'customValue',
@@ -5434,7 +5436,7 @@ export async function POST(req: Request) {
   });
 
   return result.toDataStreamResponse({
-    getErrorMessage: error => {
+    getErrorMessage: (error) => {
       if (error == null) {
         return 'unknown error';
       }
@@ -5514,14 +5516,14 @@ export default function Chat() {
   const { messages, input, handleInputChange, handleSubmit } = useChat();
   return (
     <div>
-      {messages.map(m => (
+      {messages.map((m) => (
         <div key={m.id}>
           {m.role}: {m.content}
         </div>
       ))}
 
       <form
-        onSubmit={event => {
+        onSubmit={(event) => {
           handleSubmit(event, {
             allowEmptySubmit: true,
           });
@@ -5565,7 +5567,7 @@ They have a `details` property that contains the reasoning and redacted reasonin
 You can also use `reasoning` to access just the reasoning as a string.
 
 ```tsx filename="app/page.tsx"
-messages.map(message => (
+messages.map((message) => (
   <div key={message.id}>
     {message.role === 'user' ? 'User: ' : 'AI: '}
     {message.parts.map((part, index) => {
@@ -5578,9 +5580,7 @@ messages.map(message => (
       if (part.type === 'reasoning') {
         return (
           <pre key={index}>
-            {part.details.map(detail =>
-              detail.type === 'text' ? detail.text : '<redacted>',
-            )}
+            {part.details.map((detail) => (detail.type === 'text' ? detail.text : '<redacted>'))}
           </pre>
         );
       }
@@ -5619,19 +5619,19 @@ On the client side, you can access source parts of the message object.
 Here is an example that renders the sources as links at the bottom of the message:
 
 ```tsx filename="app/page.tsx"
-messages.map(message => (
+messages.map((message) => (
   <div key={message.id}>
     {message.role === 'user' ? 'User: ' : 'AI: '}
     {message.parts
-      .filter(part => part.type !== 'source')
+      .filter((part) => part.type !== 'source')
       .map((part, index) => {
         if (part.type === 'text') {
           return <div key={index}>{part.text}</div>;
         }
       })}
     {message.parts
-      .filter(part => part.type === 'source')
-      .map(part => (
+      .filter((part) => part.type === 'source')
+      .map((part) => (
         <span key={`source-${part.source.id}`}>
           [
           <a href={part.source.url} target="_blank">
@@ -5652,16 +5652,14 @@ On the client side, you can access file parts of the message object
 and render them as images.
 
 ```tsx filename="app/page.tsx"
-messages.map(message => (
+messages.map((message) => (
   <div key={message.id}>
     {message.role === 'user' ? 'User: ' : 'AI: '}
     {message.parts.map((part, index) => {
       if (part.type === 'text') {
         return <div key={index}>{part.text}</div>;
       } else if (part.type === 'file' && part.mimeType.startsWith('image/')) {
-        return (
-          <img key={index} src={`data:${part.mimeType};base64,${part.data}`} />
-        );
+        return <img key={index} src={`data:${part.mimeType};base64,${part.data}`} />;
       }
     })}
   </div>
@@ -5692,8 +5690,7 @@ import { useChat } from '@ai-sdk/react';
 import { useRef, useState } from 'react';
 
 export default function Page() {
-  const { messages, input, handleSubmit, handleInputChange, status } =
-    useChat();
+  const { messages, input, handleSubmit, handleInputChange, status } = useChat();
 
   const [files, setFiles] = useState<FileList | undefined>(undefined);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -5701,7 +5698,7 @@ export default function Page() {
   return (
     <div>
       <div>
-        {messages.map(message => (
+        {messages.map((message) => (
           <div key={message.id}>
             <div>{`${message.role}: `}</div>
 
@@ -5710,9 +5707,7 @@ export default function Page() {
 
               <div>
                 {message.experimental_attachments
-                  ?.filter(attachment =>
-                    attachment.contentType.startsWith('image/'),
-                  )
+                  ?.filter((attachment) => attachment.contentType.startsWith('image/'))
                   .map((attachment, index) => (
                     <img
                       key={`${message.id}-${index}`}
@@ -5727,7 +5722,7 @@ export default function Page() {
       </div>
 
       <form
-        onSubmit={event => {
+        onSubmit={(event) => {
           handleSubmit(event, {
             experimental_attachments: files,
           });
@@ -5741,7 +5736,7 @@ export default function Page() {
       >
         <input
           type="file"
-          onChange={event => {
+          onChange={(event) => {
             if (event.target.files) {
               setFiles(event.target.files);
             }
@@ -5775,8 +5770,7 @@ import { useState } from 'react';
 import { Attachment } from '@ai-sdk/ui-utils';
 
 export default function Page() {
-  const { messages, input, handleSubmit, handleInputChange, status } =
-    useChat();
+  const { messages, input, handleSubmit, handleInputChange, status } = useChat();
 
   const [attachments] = useState<Attachment[]>([
     {
@@ -5794,7 +5788,7 @@ export default function Page() {
   return (
     <div>
       <div>
-        {messages.map(message => (
+        {messages.map((message) => (
           <div key={message.id}>
             <div>{`${message.role}: `}</div>
 
@@ -5803,9 +5797,7 @@ export default function Page() {
 
               <div>
                 {message.experimental_attachments
-                  ?.filter(attachment =>
-                    attachment.contentType?.startsWith('image/'),
-                  )
+                  ?.filter((attachment) => attachment.contentType?.startsWith('image/'))
                   .map((attachment, index) => (
                     <img
                       key={`${message.id}-${index}`}
@@ -5820,7 +5812,7 @@ export default function Page() {
       </div>
 
       <form
-        onSubmit={event => {
+        onSubmit={(event) => {
           handleSubmit(event, {
             experimental_attachments: attachments,
           });
@@ -5839,8 +5831,10 @@ export default function Page() {
 ```
 
 ---
+
 title: Chatbot Message Persistence
 description: Learn how to store and load chat messages in a chatbot.
+
 ---
 
 # Chatbot Message Persistence
@@ -5942,7 +5936,7 @@ export default function Chat({
   // simplified rendering code, extend as needed:
   return (
     <div>
-      {messages.map(m => (
+      {messages.map((m) => (
         <div key={m.id}>
           {m.role === 'user' ? 'User: ' : 'AI: '}
           {m.content}
@@ -6342,10 +6336,7 @@ export async function GET(request: Request) {
     execute: () => {},
   });
 
-  const stream = await streamContext.resumableStream(
-    recentStreamId,
-    () => emptyDataStream,
-  );
+  const stream = await streamContext.resumableStream(recentStreamId, () => emptyDataStream);
 
   if (stream) {
     return new Response(stream, { status: 200 });
@@ -6366,7 +6357,7 @@ export async function GET(request: Request) {
   const messageCreatedAt = new Date(mostRecentMessage.createdAt);
 
   const streamWithMessage = createDataStream({
-    execute: buffer => {
+    execute: (buffer) => {
       buffer.writeData({
         type: 'append-message',
         message: JSON.stringify(mostRecentMessage),
@@ -6390,12 +6381,7 @@ When you create a brand-new chat completion, you must:
 4. Hand that new stream to `streamContext.resumableStream()`
 
 ```ts filename="app/api/chat/route.ts"
-import {
-  appendResponseMessages,
-  createDataStream,
-  generateId,
-  streamText,
-} from 'ai';
+import { appendResponseMessages, createDataStream, generateId, streamText } from 'ai';
 import { appendStreamId, saveChat } from '@/util/chat-store';
 import { createResumableStreamContext } from 'resumable-stream';
 
@@ -6412,7 +6398,7 @@ async function POST(request: Request) {
 
   // Build the data stream that will emit tokens
   const stream = createDataStream({
-    execute: dataStream => {
+    execute: (dataStream) => {
       const result = streamText({
         model: openai('gpt-4o'),
         messages,
@@ -6432,17 +6418,17 @@ async function POST(request: Request) {
     },
   });
 
-  return new Response(
-    await streamContext.resumableStream(streamId, () => stream),
-  );
+  return new Response(await streamContext.resumableStream(streamId, () => stream));
 }
 ```
 
 With both handlers, your clients can now gracefully resume ongoing streams.
 
 ---
+
 title: Chatbot Tool Usage
 description: Learn how to use tools with the useChat hook.
+
 ---
 
 # Chatbot Tool Usage
@@ -6512,9 +6498,7 @@ export async function POST(req: Request) {
         parameters: z.object({ city: z.string() }),
         execute: async ({}: { city: string }) => {
           const weatherOptions = ['sunny', 'cloudy', 'rainy', 'snowy', 'windy'];
-          return weatherOptions[
-            Math.floor(Math.random() * weatherOptions.length)
-          ];
+          return weatherOptions[Math.floor(Math.random() * weatherOptions.length)];
         },
       },
       // client-side tool that starts user interaction:
@@ -6526,8 +6510,7 @@ export async function POST(req: Request) {
       },
       // client-side tool that is automatically executed on the client:
       getLocation: {
-        description:
-          'Get the user location. Always ask for confirmation before using this tool.',
+        description: 'Get the user location. Always ask for confirmation before using this tool.',
         parameters: z.object({}),
       },
     },
@@ -6563,30 +6546,24 @@ import { ToolInvocation } from 'ai';
 import { useChat } from '@ai-sdk/react';
 
 export default function Chat() {
-  const { messages, input, handleInputChange, handleSubmit, addToolResult } =
-    useChat({
-      maxSteps: 5,
+  const { messages, input, handleInputChange, handleSubmit, addToolResult } = useChat({
+    maxSteps: 5,
 
-      // run client-side tools that are automatically executed:
-      async onToolCall({ toolCall }) {
-        if (toolCall.toolName === 'getLocation') {
-          const cities = [
-            'New York',
-            'Los Angeles',
-            'Chicago',
-            'San Francisco',
-          ];
-          return cities[Math.floor(Math.random() * cities.length)];
-        }
-      },
-    });
+    // run client-side tools that are automatically executed:
+    async onToolCall({ toolCall }) {
+      if (toolCall.toolName === 'getLocation') {
+        const cities = ['New York', 'Los Angeles', 'Chicago', 'San Francisco'];
+        return cities[Math.floor(Math.random() * cities.length)];
+      }
+    },
+  });
 
   return (
     <>
-      {messages?.map(message => (
+      {messages?.map((message) => (
         <div key={message.id}>
           <strong>{`${message.role}: `}</strong>
-          {message.parts.map(part => {
+          {message.parts.map((part) => {
             switch (part.type) {
               // render text parts as simple text:
               case 'text':
@@ -6630,8 +6607,7 @@ export default function Chat() {
                       case 'result':
                         return (
                           <div key={callId}>
-                            Location access allowed:{' '}
-                            {part.toolInvocation.result}
+                            Location access allowed: {part.toolInvocation.result}
                           </div>
                         );
                     }
@@ -6643,11 +6619,7 @@ export default function Chat() {
                       case 'call':
                         return <div key={callId}>Getting location...</div>;
                       case 'result':
-                        return (
-                          <div key={callId}>
-                            Location: {part.toolInvocation.result}
-                          </div>
-                        );
+                        return <div key={callId}>Location: {part.toolInvocation.result}</div>;
                     }
                     break;
                   }
@@ -6657,22 +6629,18 @@ export default function Chat() {
                       // example of pre-rendering streaming tool calls:
                       case 'partial-call':
                         return (
-                          <pre key={callId}>
-                            {JSON.stringify(part.toolInvocation, null, 2)}
-                          </pre>
+                          <pre key={callId}>{JSON.stringify(part.toolInvocation, null, 2)}</pre>
                         );
                       case 'call':
                         return (
                           <div key={callId}>
-                            Getting weather information for{' '}
-                            {part.toolInvocation.args.city}...
+                            Getting weather information for {part.toolInvocation.args.city}...
                           </div>
                         );
                       case 'result':
                         return (
                           <div key={callId}>
-                            Weather in {part.toolInvocation.args.city}:{' '}
-                            {part.toolInvocation.result}
+                            Weather in {part.toolInvocation.args.city}: {part.toolInvocation.result}
                           </div>
                         );
                     }
@@ -6722,9 +6690,9 @@ export default function Chat() {
   // ...
   return (
     <>
-      {messages?.map(message => (
+      {messages?.map((message) => (
         <div key={message.id}>
-          {message.parts.map(part => {
+          {message.parts.map((part) => {
             if (part.type === 'tool-invocation') {
               switch (part.toolInvocation.state) {
                 case 'partial-call':
@@ -6792,9 +6760,7 @@ export async function POST(req: Request) {
         // tool has execute function:
         execute: async ({}: { city: string }) => {
           const weatherOptions = ['sunny', 'cloudy', 'rainy', 'snowy', 'windy'];
-          return weatherOptions[
-            Math.floor(Math.random() * weatherOptions.length)
-          ];
+          return weatherOptions[Math.floor(Math.random() * weatherOptions.length)];
         },
       },
     },
@@ -6848,13 +6814,15 @@ const response = createDataStreamResponse({
   async execute(dataStream) {
     // ...
   },
-  onError: error => `Custom error: ${error.message}`,
+  onError: (error) => `Custom error: ${error.message}`,
 });
 ```
 
 ---
+
 title: Generative User Interfaces
 description: Learn how to build Generative UI with AI SDK UI.
+
 ---
 
 # Generative User Interfaces
@@ -6892,7 +6860,7 @@ export default function Page() {
 
   return (
     <div>
-      {messages.map(message => (
+      {messages.map((message) => (
         <div key={message.id}>
           <div>{message.role === 'user' ? 'User: ' : 'AI: '}</div>
           <div>{message.content}</div>
@@ -6900,11 +6868,7 @@ export default function Page() {
       ))}
 
       <form onSubmit={handleSubmit}>
-        <input
-          value={input}
-          onChange={handleInputChange}
-          placeholder="Type a message..."
-        />
+        <input value={input} onChange={handleInputChange} placeholder="Type a message..." />
         <button type="submit">Send</button>
       </form>
     </div>
@@ -6950,7 +6914,7 @@ export const weatherTool = createTool({
     location: z.string().describe('The location to get the weather for'),
   }),
   execute: async function ({ location }) {
-    await new Promise(resolve => setTimeout(resolve, 2000));
+    await new Promise((resolve) => setTimeout(resolve, 2000));
     return { weather: 'Sunny', temperature: 75, location };
   },
 });
@@ -7031,13 +6995,13 @@ export default function Page() {
 
   return (
     <div>
-      {messages.map(message => (
+      {messages.map((message) => (
         <div key={message.id}>
           <div>{message.role === 'user' ? 'User: ' : 'AI: '}</div>
           <div>{message.content}</div>
 
           <div>
-            {message.toolInvocations?.map(toolInvocation => {
+            {message.toolInvocations?.map((toolInvocation) => {
               const { toolName, toolCallId, state } = toolInvocation;
 
               if (state === 'result') {
@@ -7052,9 +7016,7 @@ export default function Page() {
               } else {
                 return (
                   <div key={toolCallId}>
-                    {toolName === 'displayWeather' ? (
-                      <div>Loading weather...</div>
-                    ) : null}
+                    {toolName === 'displayWeather' ? <div>Loading weather...</div> : null}
                   </div>
                 );
               }
@@ -7064,11 +7026,7 @@ export default function Page() {
       ))}
 
       <form onSubmit={handleSubmit}>
-        <input
-          value={input}
-          onChange={handleInputChange}
-          placeholder="Type a message..."
-        />
+        <input value={input} onChange={handleInputChange} placeholder="Type a message..." />
         <button type="submit">Send</button>
       </form>
     </div>
@@ -7102,7 +7060,7 @@ export const stockTool = createTool({
   }),
   execute: async function ({ symbol }) {
     // Simulated API call
-    await new Promise(resolve => setTimeout(resolve, 2000));
+    await new Promise((resolve) => setTimeout(resolve, 2000));
     return { symbol, price: 100 };
   },
 });
@@ -7147,13 +7105,13 @@ export default function Page() {
 
   return (
     <div>
-      {messages.map(message => (
+      {messages.map((message) => (
         <div key={message.id}>
           <div>{message.role}</div>
           <div>{message.content}</div>
 
           <div>
-            {message.toolInvocations?.map(toolInvocation => {
+            {message.toolInvocations?.map((toolInvocation) => {
               const { toolName, toolCallId, state } = toolInvocation;
 
               if (state === 'result') {
@@ -7190,7 +7148,7 @@ export default function Page() {
         <input
           type="text"
           value={input}
-          onChange={event => {
+          onChange={(event) => {
             setInput(event.target.value);
           }}
         />
@@ -7204,8 +7162,10 @@ export default function Page() {
 By following this pattern, you can continue to add more tools and components, expanding the capabilities of your Generative UI application.
 
 ---
+
 title: Completion
 description: Learn how to use the useCompletion hook.
+
 ---
 
 # Completion
@@ -7228,12 +7188,7 @@ export default function Page() {
 
   return (
     <form onSubmit={handleSubmit}>
-      <input
-        name="prompt"
-        value={input}
-        onChange={handleInputChange}
-        id="input"
-      />
+      <input name="prompt" value={input} onChange={handleInputChange} id="input" />
       <button type="submit">Submit</button>
       <div>{completion}</div>
     </form>
@@ -7312,7 +7267,7 @@ const { input, setInput } = useCompletion();
 
 return (
   <>
-    <MyCustomInput value={input} onChange={value => setInput(value)} />
+    <MyCustomInput value={input} onChange={(value) => setInput(value)} />
   </>
 );
 ```
@@ -7387,8 +7342,10 @@ const { messages, input, handleInputChange, handleSubmit } = useCompletion({
 In this example, the `useCompletion` hook sends a POST request to the `/api/completion` endpoint with the specified headers, additional body fields, and credentials for that fetch request. On your server side, you can handle the request with these additional information.
 
 ---
+
 title: Object Generation
 description: Learn how to use the useObject hook.
+
 ---
 
 # Object Generation
@@ -7416,7 +7373,7 @@ export const notificationSchema = z.object({
     z.object({
       name: z.string().describe('Name of a fictional person.'),
       message: z.string().describe('Message. Do not use emojis or links.'),
-    }),
+    })
   ),
 });
 ```
@@ -7442,9 +7399,7 @@ export default function Page() {
 
   return (
     <>
-      <button onClick={() => submit('Messages during finals week.')}>
-        Generate notifications
-      </button>
+      <button onClick={() => submit('Messages during finals week.')}>Generate notifications</button>
 
       {object?.notifications?.map((notification, index) => (
         <div key={index}>
@@ -7475,8 +7430,7 @@ export async function POST(req: Request) {
   const result = streamObject({
     model: openai('gpt-4-turbo'),
     schema: notificationSchema,
-    prompt:
-      `Generate 3 notifications for a messages app in this context:` + context,
+    prompt: `Generate 3 notifications for a messages app in this context:` + context,
   });
 
   return result.toTextStreamResponse();
@@ -7510,10 +7464,7 @@ export default function Page() {
     <>
       {isLoading && <Spinner />}
 
-      <button
-        onClick={() => submit('Messages during finals week.')}
-        disabled={isLoading}
-      >
+      <button onClick={() => submit('Messages during finals week.')} disabled={isLoading}>
         Generate notifications
       </button>
 
@@ -7551,9 +7502,7 @@ export default function Page() {
         </button>
       )}
 
-      <button onClick={() => submit('Messages during finals week.')}>
-        Generate notifications
-      </button>
+      <button onClick={() => submit('Messages during finals week.')}>Generate notifications</button>
 
       {object?.notifications?.map((notification, index) => (
         <div key={index}>
@@ -7592,9 +7541,7 @@ export default function Page() {
     <>
       {error && <div>An error occurred.</div>}
 
-      <button onClick={() => submit('Messages during finals week.')}>
-        Generate notifications
-      </button>
+      <button onClick={() => submit('Messages during finals week.')}>Generate notifications</button>
 
       {object?.notifications?.map((notification, index) => (
         <div key={index}>
@@ -7641,9 +7588,7 @@ export default function Page() {
 
   return (
     <div>
-      <button onClick={() => submit('Messages during finals week.')}>
-        Generate notifications
-      </button>
+      <button onClick={() => submit('Messages during finals week.')}>Generate notifications</button>
 
       {object?.notifications?.map((notification, index) => (
         <div key={index}>
@@ -7672,8 +7617,10 @@ const { submit, object } = useObject({
 ```
 
 ---
+
 title: OpenAI Assistants
 description: Learn how to use the useAssistant hook.
+
 ---
 
 # OpenAI Assistants
@@ -7692,8 +7639,9 @@ The `useAssistant` hook is supported in `@ai-sdk/react`, `ai/svelte`, and `ai/vu
 import { Message, useAssistant } from '@ai-sdk/react';
 
 export default function Chat() {
-  const { status, messages, input, submitMessage, handleInputChange } =
-    useAssistant({ api: '/api/assistant' });
+  const { status, messages, input, submitMessage, handleInputChange } = useAssistant({
+    api: '/api/assistant',
+  });
 
   return (
     <div>
@@ -7705,9 +7653,7 @@ export default function Chat() {
             <>
               {(m.data as any).description}
               <br />
-              <pre className={'bg-gray-200'}>
-                {JSON.stringify(m.data, null, 2)}
-              </pre>
+              <pre className={'bg-gray-200'}>{JSON.stringify(m.data, null, 2)}</pre>
             </>
           )}
         </div>
@@ -7775,31 +7721,24 @@ export async function POST(req: Request) {
         runResult?.status === 'requires_action' &&
         runResult.required_action?.type === 'submit_tool_outputs'
       ) {
-        const tool_outputs =
-          runResult.required_action.submit_tool_outputs.tool_calls.map(
-            (toolCall: any) => {
-              const parameters = JSON.parse(toolCall.function.arguments);
+        const tool_outputs = runResult.required_action.submit_tool_outputs.tool_calls.map(
+          (toolCall: any) => {
+            const parameters = JSON.parse(toolCall.function.arguments);
 
-              switch (toolCall.function.name) {
-                // configure your tool calls here
+            switch (toolCall.function.name) {
+              // configure your tool calls here
 
-                default:
-                  throw new Error(
-                    `Unknown tool call function: ${toolCall.function.name}`,
-                  );
-              }
-            },
-          );
+              default:
+                throw new Error(`Unknown tool call function: ${toolCall.function.name}`);
+            }
+          }
+        );
 
         runResult = await forwardStream(
-          openai.beta.threads.runs.submitToolOutputsStream(
-            threadId,
-            runResult.id,
-            { tool_outputs },
-          ),
+          openai.beta.threads.runs.submitToolOutputsStream(threadId, runResult.id, { tool_outputs })
         );
       }
-    },
+    }
   );
 }
 ```
@@ -7885,8 +7824,10 @@ const { messages, input, handleInputChange, handleSubmit } = useAssistant({
 In this example, the `useAssistant` hook sends a POST request to the `/api/custom-completion` endpoint with the specified headers, additional body fields, and credentials for that fetch request. On your server side, you can handle the request with these additional information.
 
 ---
+
 title: Streaming Custom Data
 description: Learn how to stream custom data to the client.
+
 ---
 
 # Streaming Custom Data
@@ -7925,7 +7866,7 @@ export async function POST(req: Request) {
 
   // immediately start streaming (solves RAG issues with status, etc.)
   return createDataStreamResponse({
-    execute: dataStream => {
+    execute: (dataStream) => {
       dataStream.writeData('initialized call');
 
       const result = streamText({
@@ -7948,7 +7889,7 @@ export async function POST(req: Request) {
 
       result.mergeIntoDataStream(dataStream);
     },
-    onError: error => {
+    onError: (error) => {
       // Error messages are masked by default for security reasons.
       // If you want to expose the error message to the client, you can do so here:
       return error instanceof Error ? error.message : String(error);
@@ -7975,7 +7916,7 @@ export async function POST(req: Request) {
   const { messages } = await req.json();
 
   return createDataStreamResponse({
-    execute: dataStream => {
+    execute: (dataStream) => {
       // write a custom url source to the stream:
       dataStream.writeSource({
         sourceType: 'url',
@@ -8028,9 +7969,7 @@ const { messages } = useChat();
 const result = (
   <>
     {messages?.map((m: Message) => (
-      <div key={m.id}>
-        {m.annotations && <>{JSON.stringify(m.annotations)}</>}
-      </div>
+      <div key={m.id}>{m.annotations && <>{JSON.stringify(m.annotations)}</>}</div>
     ))}
   </>
 );
@@ -8050,7 +7989,7 @@ setData(undefined);
 setData([{ test: 'value' }]);
 
 // transform existing data, e.g. adding additional values:
-setData(currentData => [...currentData, { test: 'value' }]);
+setData((currentData) => [...currentData, { test: 'value' }]);
 ```
 
 #### Example: Clear on Submit
@@ -8061,19 +8000,16 @@ setData(currentData => [...currentData, { test: 'value' }]);
 import { Message, useChat } from '@ai-sdk/react';
 
 export default function Chat() {
-  const { messages, input, handleInputChange, handleSubmit, data, setData } =
-    useChat();
+  const { messages, input, handleInputChange, handleSubmit, data, setData } = useChat();
 
   return (
     <>
       {data && <pre>{JSON.stringify(data, null, 2)}</pre>}
 
-      {messages?.map((m: Message) => (
-        <div key={m.id}>{`${m.role}: ${m.content}`}</div>
-      ))}
+      {messages?.map((m: Message) => <div key={m.id}>{`${m.role}: ${m.content}`}</div>)}
 
       <form
-        onSubmit={e => {
+        onSubmit={(e) => {
           setData(undefined); // clear stream data
           handleSubmit(e);
         }}
@@ -8086,8 +8022,10 @@ export default function Chat() {
 ```
 
 ---
+
 title: Error Handling
 description: Learn how to handle errors in the AI SDK UI
+
 ---
 
 # Error Handling
@@ -8109,12 +8047,11 @@ You can use the error object to show an error message, disable the submit button
 import { useChat } from '@ai-sdk/react';
 
 export default function Chat() {
-  const { messages, input, handleInputChange, handleSubmit, error, reload } =
-    useChat({});
+  const { messages, input, handleInputChange, handleSubmit, error, reload } = useChat({});
 
   return (
     <div>
-      {messages.map(m => (
+      {messages.map((m) => (
         <div key={m.id}>
           {m.role}: {m.content}
         </div>
@@ -8130,11 +8067,7 @@ export default function Chat() {
       )}
 
       <form onSubmit={handleSubmit}>
-        <input
-          value={input}
-          onChange={handleInputChange}
-          disabled={error != null}
-        />
+        <input value={input} onChange={handleInputChange} disabled={error != null} />
       </form>
     </div>
   );
@@ -8151,14 +8084,7 @@ Alternatively you can write a custom submit handler that replaces the last messa
 import { useChat } from '@ai-sdk/react';
 
 export default function Chat() {
-  const {
-    handleInputChange,
-    handleSubmit,
-    error,
-    input,
-    messages,
-    setMessages,
-  } = useChat({});
+  const { handleInputChange, handleSubmit, error, input, messages, setMessages } = useChat({});
 
   function customSubmit(event: React.FormEvent<HTMLFormElement>) {
     if (error != null) {
@@ -8170,7 +8096,7 @@ export default function Chat() {
 
   return (
     <div>
-      {messages.map(m => (
+      {messages.map((m) => (
         <div key={m.id}>
           {m.role}: {m.content}
         </div>
@@ -8199,7 +8125,7 @@ export default function Page() {
     /* ... */
   } = useChat({
     // handle error:
-    onError: error => {
+    onError: (error) => {
       console.error(error);
     },
   });
@@ -8218,8 +8144,10 @@ export async function POST(req: Request) {
 ```
 
 ---
+
 title: Smooth streaming japanese text
 description: Learn how to stream smooth stream japanese text
+
 ---
 
 # Smooth streaming japanese text
@@ -8238,8 +8166,10 @@ const { data } = useChat({
 ```
 
 ---
+
 title: Smooth streaming chinese text
 description: Learn how to stream smooth stream chinese text
+
 ---
 
 # Smooth streaming chinese text
@@ -8258,8 +8188,10 @@ const { data } = useChat({
 ```
 
 ---
+
 title: AI_APICallError
 description: Learn how to fix AI_APICallError
+
 ---
 
 # AI_APICallError
@@ -8289,8 +8221,10 @@ if (APICallError.isInstance(error)) {
 ```
 
 ---
+
 title: AI_DownloadError
 description: Learn how to fix AI_DownloadError
+
 ---
 
 # AI_DownloadError
@@ -8317,8 +8251,10 @@ if (DownloadError.isInstance(error)) {
 ```
 
 ---
+
 title: AI_EmptyResponseBodyError
 description: Learn how to fix AI_EmptyResponseBodyError
+
 ---
 
 # AI_EmptyResponseBodyError
@@ -8342,8 +8278,10 @@ if (EmptyResponseBodyError.isInstance(error)) {
 ```
 
 ---
+
 title: AI_InvalidArgumentError
 description: Learn how to fix AI_InvalidArgumentError
+
 ---
 
 # AI_InvalidArgumentError
@@ -8369,8 +8307,10 @@ if (InvalidArgumentError.isInstance(error)) {
 ```
 
 ---
+
 title: AI_InvalidDataContentError
 description: How to fix AI_InvalidDataContentError
+
 ---
 
 # AI_InvalidDataContentError
@@ -8395,8 +8335,10 @@ if (InvalidDataContentError.isInstance(error)) {
 ```
 
 ---
+
 title: AI_InvalidDataContent
 description: Learn how to fix AI_InvalidDataContent
+
 ---
 
 # AI_InvalidDataContent
@@ -8422,8 +8364,10 @@ if (InvalidDataContent.isInstance(error)) {
 ```
 
 ---
+
 title: AI_InvalidMessageRoleError
 description: Learn how to fix AI_InvalidMessageRoleError
+
 ---
 
 # AI_InvalidMessageRoleError
@@ -8448,8 +8392,10 @@ if (InvalidMessageRoleError.isInstance(error)) {
 ```
 
 ---
+
 title: AI_InvalidPromptError
 description: Learn how to fix AI_InvalidPromptError
+
 ---
 
 # AI_InvalidPromptError
@@ -8475,8 +8421,10 @@ if (InvalidPromptError.isInstance(error)) {
 ```
 
 ---
+
 title: AI_InvalidResponseDataError
 description: Learn how to fix AI_InvalidResponseDataError
+
 ---
 
 # AI_InvalidResponseDataError
@@ -8501,8 +8449,10 @@ if (InvalidResponseDataError.isInstance(error)) {
 ```
 
 ---
+
 title: AI_InvalidToolArgumentsError
 description: Learn how to fix AI_InvalidToolArgumentsError
+
 ---
 
 # AI_InvalidToolArgumentsError
@@ -8529,8 +8479,10 @@ if (InvalidToolArgumentsError.isInstance(error)) {
 ```
 
 ---
+
 title: AI_JSONParseError
 description: Learn how to fix AI_JSONParseError
+
 ---
 
 # AI_JSONParseError
@@ -8555,8 +8507,10 @@ if (JSONParseError.isInstance(error)) {
 ```
 
 ---
+
 title: AI_LoadAPIKeyError
 description: Learn how to fix AI_LoadAPIKeyError
+
 ---
 
 # AI_LoadAPIKeyError
@@ -8580,8 +8534,10 @@ if (LoadAPIKeyError.isInstance(error)) {
 ```
 
 ---
+
 title: AI_LoadSettingError
 description: Learn how to fix AI_LoadSettingError
+
 ---
 
 # AI_LoadSettingError
@@ -8605,8 +8561,10 @@ if (LoadSettingError.isInstance(error)) {
 ```
 
 ---
+
 title: AI_MessageConversionError
 description: Learn how to fix AI_MessageConversionError
+
 ---
 
 # AI_MessageConversionError
@@ -8631,8 +8589,10 @@ if (MessageConversionError.isInstance(error)) {
 ```
 
 ---
+
 title: AI_NoAudioGeneratedError
 description: Learn how to fix AI_NoAudioGeneratedError
+
 ---
 
 # AI_NoAudioGeneratedError
@@ -8657,8 +8617,10 @@ if (NoAudioGeneratedError.isInstance(error)) {
 ```
 
 ---
+
 title: AI_NoContentGeneratedError
 description: Learn how to fix AI_NoContentGeneratedError
+
 ---
 
 # AI_NoContentGeneratedError
@@ -8682,8 +8644,10 @@ if (NoContentGeneratedError.isInstance(error)) {
 ```
 
 ---
+
 title: AI_NoImageGeneratedError
 description: Learn how to fix AI_NoImageGeneratedError
+
 ---
 
 # AI_NoImageGeneratedError
@@ -8719,8 +8683,10 @@ try {
 ```
 
 ---
+
 title: AI_NoObjectGeneratedError
 description: Learn how to fix AI_NoObjectGeneratedError
+
 ---
 
 # AI_NoObjectGeneratedError
@@ -8763,8 +8729,10 @@ try {
 ```
 
 ---
+
 title: AI_NoOutputSpecifiedError
 description: Learn how to fix AI_NoOutputSpecifiedError
+
 ---
 
 # AI_NoOutputSpecifiedError
@@ -8788,8 +8756,10 @@ if (NoOutputSpecifiedError.isInstance(error)) {
 ```
 
 ---
+
 title: AI_NoSuchModelError
 description: Learn how to fix AI_NoSuchModelError
+
 ---
 
 # AI_NoSuchModelError
@@ -8815,8 +8785,10 @@ if (NoSuchModelError.isInstance(error)) {
 ```
 
 ---
+
 title: AI_NoSuchProviderError
 description: Learn how to fix AI_NoSuchProviderError
+
 ---
 
 # AI_NoSuchProviderError
@@ -8844,8 +8816,10 @@ if (NoSuchProviderError.isInstance(error)) {
 ```
 
 ---
+
 title: AI_NoSuchToolError
 description: Learn how to fix AI_NoSuchToolError
+
 ---
 
 # AI_NoSuchToolError
@@ -8871,8 +8845,10 @@ if (NoSuchToolError.isInstance(error)) {
 ```
 
 ---
+
 title: AI_NoTranscriptGeneratedError
 description: Learn how to fix AI_NoTranscriptGeneratedError
+
 ---
 
 # AI_NoTranscriptGeneratedError
@@ -8897,8 +8873,10 @@ if (NoTranscriptGeneratedError.isInstance(error)) {
 ```
 
 ---
+
 title: AI_RetryError
 description: Learn how to fix AI_RetryError
+
 ---
 
 # AI_RetryError
@@ -8925,8 +8903,10 @@ if (RetryError.isInstance(error)) {
 ```
 
 ---
+
 title: AI_TooManyEmbeddingValuesForCallError
 description: Learn how to fix AI_TooManyEmbeddingValuesForCallError
+
 ---
 
 # AI_TooManyEmbeddingValuesForCallError
@@ -8953,8 +8933,10 @@ if (TooManyEmbeddingValuesForCallError.isInstance(error)) {
 ```
 
 ---
+
 title: ToolCallRepairError
 description: Learn how to fix AI SDK ToolCallRepairError
+
 ---
 
 # ToolCallRepairError
@@ -8982,8 +8964,10 @@ if (ToolCallRepairError.isInstance(error)) {
 ```
 
 ---
+
 title: AI_ToolExecutionError
 description: Learn how to fix AI_ToolExecutionError
+
 ---
 
 # AI_ToolExecutionError
@@ -9011,8 +8995,10 @@ if (ToolExecutionError.isInstance(error)) {
 ```
 
 ---
+
 title: AI_TypeValidationError
 description: Learn how to fix AI_TypeValidationError
+
 ---
 
 # AI_TypeValidationError
@@ -9037,8 +9023,10 @@ if (TypeValidationError.isInstance(error)) {
 ```
 
 ---
+
 title: AI_UnsupportedFunctionalityError
 description: Learn how to fix AI_UnsupportedFunctionalityError
+
 ---
 
 # AI_UnsupportedFunctionalityError
@@ -9063,8 +9051,10 @@ if (UnsupportedFunctionalityError.isInstance(error)) {
 ```
 
 ---
+
 title: xAI Grok
 description: Learn how to use xAI Grok.
+
 ---
 
 # xAI Grok Provider
@@ -9077,15 +9067,15 @@ The xAI Grok provider is available via the `@ai-sdk/xai` module. You can
 install it with
 
 <Tabs items={['pnpm', 'npm', 'yarn']}>
-  <Tab>
-    <Snippet text="pnpm add @ai-sdk/xai" dark />
-  </Tab>
-  <Tab>
-    <Snippet text="npm install @ai-sdk/xai" dark />
-  </Tab>
-  <Tab>
-    <Snippet text="yarn add @ai-sdk/xai" dark />
-  </Tab>
+<Tab>
+<Snippet text="pnpm add @ai-sdk/xai" dark />
+</Tab>
+<Tab>
+<Snippet text="npm install @ai-sdk/xai" dark />
+</Tab>
+<Tab>
+<Snippet text="yarn add @ai-sdk/xai" dark />
+</Tab>
 </Tabs>
 
 ## Provider Instance
@@ -9261,8 +9251,10 @@ const { images } = await generateImage({
 | `grok-2-image` | 1024x768 (default) | xAI's text-to-image generation model, designed to create high-quality images from text prompts. It's trained on a diverse dataset and can generate images across various styles, subjects, and settings. |
 
 ---
+
 title: Vercel
 description: Learn how to use Vercel's v0 models with the AI SDK.
+
 ---
 
 # Vercel Provider
@@ -9291,15 +9283,15 @@ You can create your Vercel API key at [v0.dev](https://v0.dev/chat/settings/keys
 The Vercel provider is available via the `@ai-sdk/vercel` module. You can install it with:
 
 <Tabs items={['pnpm', 'npm', 'yarn']}>
-  <Tab>
-    <Snippet text="pnpm add @ai-sdk/vercel" dark />
-  </Tab>
-  <Tab>
-    <Snippet text="npm install @ai-sdk/vercel" dark />
-  </Tab>
-  <Tab>
-    <Snippet text="yarn add @ai-sdk/vercel" dark />
-  </Tab>
+<Tab>
+<Snippet text="pnpm add @ai-sdk/vercel" dark />
+</Tab>
+<Tab>
+<Snippet text="npm install @ai-sdk/vercel" dark />
+</Tab>
+<Tab>
+<Snippet text="yarn add @ai-sdk/vercel" dark />
+</Tab>
 </Tabs>
 
 ## Provider Instance
@@ -9395,8 +9387,10 @@ Capabilities:
 | `v0-1.0-md` | <Check size={18} /> | <Check size={18} /> | <Check size={18} /> | <Check size={18} /> |
 
 ---
+
 title: OpenAI
 description: Learn how to use the OpenAI provider for the AI SDK.
+
 ---
 
 # OpenAI Provider
@@ -9408,15 +9402,15 @@ The [OpenAI](https://openai.com/) provider contains language model support for t
 The OpenAI provider is available in the `@ai-sdk/openai` module. You can install it with
 
 <Tabs items={['pnpm', 'npm', 'yarn']}>
-  <Tab>
-    <Snippet text="pnpm add @ai-sdk/openai" dark />
-  </Tab>
-  <Tab>
-    <Snippet text="npm install @ai-sdk/openai" dark />
-  </Tab>
-  <Tab>
-    <Snippet text="yarn add @ai-sdk/openai" dark />
-  </Tab>
+<Tab>
+<Snippet text="pnpm add @ai-sdk/openai" dark />
+</Tab>
+<Tab>
+<Snippet text="npm install @ai-sdk/openai" dark />
+</Tab>
+<Tab>
+<Snippet text="yarn add @ai-sdk/openai" dark />
+</Tab>
 </Tabs>
 
 ## Provider Instance
@@ -9692,7 +9686,7 @@ const result = await generateObject({
       z.object({
         name: z.string(),
         amount: z.string(),
-      }),
+      })
     ),
     steps: z.array(z.string()),
   }),
@@ -10124,7 +10118,7 @@ const result = await generateObject({
         z.object({
           name: z.string(),
           amount: z.string(),
-        }),
+        })
       ),
       steps: z.array(z.string()),
     }),
@@ -10423,8 +10417,10 @@ const result = await generateSpeech({
 | `gpt-4o-mini-tts` | <Check size={18} /> |
 
 ---
+
 title: Azure OpenAI
 description: Learn how to use the Azure OpenAI provider for the AI SDK.
+
 ---
 
 # Azure OpenAI Provider
@@ -10436,15 +10432,15 @@ The [Azure OpenAI](https://azure.microsoft.com/en-us/products/ai-services/openai
 The Azure OpenAI provider is available in the `@ai-sdk/azure` module. You can install it with
 
 <Tabs items={['pnpm', 'npm', 'yarn']}>
-  <Tab>
-    <Snippet text="pnpm add @ai-sdk/azure" dark />
-  </Tab>
-  <Tab>
-    <Snippet text="npm install @ai-sdk/azure" dark />
-  </Tab>
-  <Tab>
-    <Snippet text="yarn add @ai-sdk/azure" dark />
-  </Tab>
+<Tab>
+<Snippet text="pnpm add @ai-sdk/azure" dark />
+</Tab>
+<Tab>
+<Snippet text="npm install @ai-sdk/azure" dark />
+</Tab>
+<Tab>
+<Snippet text="yarn add @ai-sdk/azure" dark />
+</Tab>
 </Tabs>
 
 ## Provider Instance
@@ -10967,8 +10963,10 @@ The following provider options are available:
 | `gpt-4o-transcribe`      | <Check size={18} /> | <Cross size={18} /> | <Cross size={18} /> | <Cross size={18} /> |
 
 ---
+
 title: Anthropic
 description: Learn how to use the Anthropic provider for the AI SDK.
+
 ---
 
 # Anthropic Provider
@@ -10980,15 +10978,15 @@ The [Anthropic](https://www.anthropic.com/) provider contains language model sup
 The Anthropic provider is available in the `@ai-sdk/anthropic` module. You can install it with
 
 <Tabs items={['pnpm', 'npm', 'yarn']}>
-  <Tab>
-    <Snippet text="pnpm add @ai-sdk/anthropic" dark />
-  </Tab>
-  <Tab>
-    <Snippet text="npm install @ai-sdk/anthropic" dark />
-  </Tab>
-  <Tab>
-    <Snippet text="yarn add @ai-sdk/anthropic" dark />
-  </Tab>
+<Tab>
+<Snippet text="pnpm add @ai-sdk/anthropic" dark />
+</Tab>
+<Tab>
+<Snippet text="npm install @ai-sdk/anthropic" dark />
+</Tab>
+<Tab>
+<Snippet text="yarn add @ai-sdk/anthropic" dark />
+</Tab>
 </Tabs>
 
 ## Provider Instance
@@ -11226,15 +11224,7 @@ The Text Editor Tool provides functionality for viewing and editing text files:
 
 ```ts
 const textEditorTool = anthropic.tools.textEditor_20241022({
-  execute: async ({
-    command,
-    path,
-    file_text,
-    insert_line,
-    new_str,
-    old_str,
-    view_range,
-  }) => {
+  execute: async ({ command, path, file_text, insert_line, new_str, old_str, view_range }) => {
     // Implement your text editing logic here
     // Return the result of the text editing operation
   },
@@ -11284,9 +11274,7 @@ const computerTool = anthropic.tools.computer_20241022({
         // multipart result:
         return {
           type: 'image',
-          data: fs
-            .readFileSync('./data/screenshot-editor.png')
-            .toString('base64'),
+          data: fs.readFileSync('./data/screenshot-editor.png').toString('base64'),
         };
       }
       default: {
@@ -11336,7 +11324,7 @@ const result = await generateText({
         {
           type: 'file',
           data: new URL(
-            'https://github.com/vercel/ai/blob/main/examples/ai-core/data/ai.pdf?raw=true',
+            'https://github.com/vercel/ai/blob/main/examples/ai-core/data/ai.pdf?raw=true'
           ),
           mimeType: 'application/pdf',
         },
@@ -11397,8 +11385,10 @@ and the `mimeType` should be set to `'application/pdf'`.
 </Note>
 
 ---
+
 title: Amazon Bedrock
 description: Learn how to use the Amazon Bedrock provider.
+
 ---
 
 # Amazon Bedrock Provider
@@ -11410,15 +11400,15 @@ The Amazon Bedrock provider for the [AI SDK](/docs) contains language model supp
 The Bedrock provider is available in the `@ai-sdk/amazon-bedrock` module. You can install it with
 
 <Tabs items={['pnpm', 'npm', 'yarn']}>
-  <Tab>
-    <Snippet text="pnpm add @ai-sdk/amazon-bedrock" dark />
-  </Tab>
-  <Tab>
-    <Snippet text="npm install @ai-sdk/amazon-bedrock" dark />
-  </Tab>
-  <Tab>
-    <Snippet text="yarn add @ai-sdk/amazon-bedrock" dark />
-  </Tab>
+<Tab>
+<Snippet text="pnpm add @ai-sdk/amazon-bedrock" dark />
+</Tab>
+<Tab>
+<Snippet text="npm install @ai-sdk/amazon-bedrock" dark />
+</Tab>
+<Tab>
+<Snippet text="yarn add @ai-sdk/amazon-bedrock" dark />
+</Tab>
 </Tabs>
 
 ### Prerequisites
@@ -11480,15 +11470,15 @@ _Usage:_
 `@aws-sdk/credential-providers` package provides a set of credential providers that can be used to create a credential provider chain.
 
 <Tabs items={['pnpm', 'npm', 'yarn']}>
-  <Tab>
-    <Snippet text="pnpm add @aws-sdk/credential-providers" dark />
-  </Tab>
-  <Tab>
-    <Snippet text="npm install @aws-sdk/credential-providers" dark />
-  </Tab>
-  <Tab>
-    <Snippet text="yarn add @aws-sdk/credential-providers" dark />
-  </Tab>
+<Tab>
+<Snippet text="pnpm add @aws-sdk/credential-providers" dark />
+</Tab>
+<Tab>
+<Snippet text="npm install @aws-sdk/credential-providers" dark />
+</Tab>
+<Tab>
+<Snippet text="yarn add @aws-sdk/credential-providers" dark />
+</Tab>
 </Tabs>
 
 ```ts
@@ -11678,8 +11668,7 @@ Cache usage information is returned in the `providerMetadata` object`. See examp
 import { bedrock } from '@ai-sdk/amazon-bedrock';
 import { generateText } from 'ai';
 
-const cyberpunkAnalysis =
-  '... literary analysis of cyberpunk themes and concepts ...';
+const cyberpunkAnalysis = '... literary analysis of cyberpunk themes and concepts ...';
 
 const result = await generateText({
   model: bedrock('anthropic.claude-3-5-sonnet-20241022-v2:0'),
@@ -11693,8 +11682,7 @@ const result = await generateText({
     },
     {
       role: 'user',
-      content:
-        'What are the key cyberpunk themes that Gibson explores in Neuromancer?',
+      content: 'What are the key cyberpunk themes that Gibson explores in Neuromancer?',
     },
   ],
 });
@@ -11714,8 +11702,7 @@ Cache points also work with streaming responses:
 import { bedrock } from '@ai-sdk/amazon-bedrock';
 import { streamText } from 'ai';
 
-const cyberpunkAnalysis =
-  '... literary analysis of cyberpunk themes and concepts ...';
+const cyberpunkAnalysis = '... literary analysis of cyberpunk themes and concepts ...';
 
 const result = streamText({
   model: bedrock('anthropic.claude-3-5-sonnet-20241022-v2:0'),
@@ -11730,8 +11717,7 @@ const result = streamText({
     },
     {
       role: 'user',
-      content:
-        'How does Gibson explore the relationship between humanity and technology?',
+      content: 'How does Gibson explore the relationship between humanity and technology?',
     },
   ],
 });
@@ -11740,10 +11726,7 @@ for await (const textPart of result.textStream) {
   process.stdout.write(textPart);
 }
 
-console.log(
-  'Cache token usage:',
-  (await result.providerMetadata)?.bedrock?.usage,
-);
+console.log('Cache token usage:', (await result.providerMetadata)?.bedrock?.usage);
 // Shows cache read/write token usage, e.g.:
 // {
 //   cacheReadInputTokens: 1337,
@@ -12014,8 +11997,10 @@ environment that the Amazon Bedrock provider will then pick up and could
 conflict with the ones you're intending to use.
 
 ---
+
 title: Groq
 description: Learn how to use Groq.
+
 ---
 
 # Groq Provider
@@ -12028,15 +12013,15 @@ The Groq provider is available via the `@ai-sdk/groq` module.
 You can install it with
 
 <Tabs items={['pnpm', 'npm', 'yarn']}>
-  <Tab>
-    <Snippet text="pnpm add @ai-sdk/groq" dark />
-  </Tab>
-  <Tab>
-    <Snippet text="npm install @ai-sdk/groq" dark />
-  </Tab>
-  <Tab>
-    <Snippet text="yarn add @ai-sdk/groq" dark />
-  </Tab>
+<Tab>
+<Snippet text="pnpm add @ai-sdk/groq" dark />
+</Tab>
+<Tab>
+<Snippet text="npm install @ai-sdk/groq" dark />
+</Tab>
+<Tab>
+<Snippet text="yarn add @ai-sdk/groq" dark />
+</Tab>
 </Tabs>
 
 ## Provider Instance
@@ -12205,8 +12190,10 @@ The following provider options are available:
 | `distil-whisper-large-v3-en` | <Check size={18} /> | <Cross size={18} /> | <Cross size={18} /> | <Cross size={18} /> |
 
 ---
+
 title: Fal
 description: Learn how to use Fal AI models with the AI SDK.
+
 ---
 
 # Fal Provider
@@ -12218,15 +12205,15 @@ description: Learn how to use Fal AI models with the AI SDK.
 The Fal provider is available via the `@ai-sdk/fal` module. You can install it with
 
 <Tabs items={['pnpm', 'npm', 'yarn']}>
-  <Tab>
-    <Snippet text="pnpm add @ai-sdk/fal" dark />
-  </Tab>
-  <Tab>
-    <Snippet text="npm install @ai-sdk/fal" dark />
-  </Tab>
-  <Tab>
-    <Snippet text="yarn add @ai-sdk/fal" dark />
-  </Tab>
+<Tab>
+<Snippet text="pnpm add @ai-sdk/fal" dark />
+</Tab>
+<Tab>
+<Snippet text="npm install @ai-sdk/fal" dark />
+</Tab>
+<Tab>
+<Snippet text="yarn add @ai-sdk/fal" dark />
+</Tab>
 </Tabs>
 
 ## Provider Instance
@@ -12342,8 +12329,7 @@ await generateImage({
   prompt: 'Put a donut next to the flour.',
   providerOptions: {
     fal: {
-      image_url:
-        'https://v3.fal.media/files/rabbit/rmgBxhwGYb2d3pl3x9sKf_output.png',
+      image_url: 'https://v3.fal.media/files/rabbit/rmgBxhwGYb2d3pl3x9sKf_output.png',
     },
   },
 });
@@ -12424,8 +12410,10 @@ The following provider options are available:
 | `wizper`  | <Check size={18} /> | <Check size={18} /> | <Check size={18} /> | <Check size={18} /> |
 
 ---
+
 title: AssemblyAI
 description: Learn how to use the AssemblyAI provider for the AI SDK.
+
 ---
 
 # AssemblyAI Provider
@@ -12437,15 +12425,15 @@ The [AssemblyAI](https://assemblyai.com/) provider contains language model suppo
 The AssemblyAI provider is available in the `@ai-sdk/assemblyai` module. You can install it with
 
 <Tabs items={['pnpm', 'npm', 'yarn']}>
-  <Tab>
-    <Snippet text="pnpm add @ai-sdk/assemblyai" dark />
-  </Tab>
-  <Tab>
-    <Snippet text="npm install @ai-sdk/assemblyai" dark />
-  </Tab>
-  <Tab>
-    <Snippet text="yarn add @ai-sdk/assemblyai" dark />
-  </Tab>
+<Tab>
+<Snippet text="pnpm add @ai-sdk/assemblyai" dark />
+</Tab>
+<Tab>
+<Snippet text="npm install @ai-sdk/assemblyai" dark />
+</Tab>
+<Tab>
+<Snippet text="yarn add @ai-sdk/assemblyai" dark />
+</Tab>
 </Tabs>
 
 ## Provider Instance
@@ -12703,8 +12691,10 @@ The following provider options are available:
 | `nano` | <Check size={18} /> | <Check size={18} /> | <Check size={18} /> | <Check size={18} /> |
 
 ---
+
 title: DeepInfra
 description: Learn how to use DeepInfra's models with the AI SDK.
+
 ---
 
 # DeepInfra Provider
@@ -12716,15 +12706,15 @@ The [DeepInfra](https://deepinfra.com) provider contains support for state-of-th
 The DeepInfra provider is available via the `@ai-sdk/deepinfra` module. You can install it with:
 
 <Tabs items={['pnpm', 'npm', 'yarn']}>
-  <Tab>
-    <Snippet text="pnpm add @ai-sdk/deepinfra" dark />
-  </Tab>
-  <Tab>
-    <Snippet text="npm install @ai-sdk/deepinfra" dark />
-  </Tab>
-  <Tab>
-    <Snippet text="yarn add @ai-sdk/deepinfra" dark />
-  </Tab>
+<Tab>
+<Snippet text="pnpm add @ai-sdk/deepinfra" dark />
+</Tab>
+<Tab>
+<Snippet text="npm install @ai-sdk/deepinfra" dark />
+</Tab>
+<Tab>
+<Snippet text="yarn add @ai-sdk/deepinfra" dark />
+</Tab>
 </Tabs>
 
 ## Provider Instance
@@ -12886,8 +12876,10 @@ For models supporting size parameters, dimensions must typically be:
 For more details and pricing information, see the [DeepInfra text-to-image models page](https://deepinfra.com/models/text-to-image).
 
 ---
+
 title: Deepgram
 description: Learn how to use the Deepgram provider for the AI SDK.
+
 ---
 
 # Deepgram Provider
@@ -12899,15 +12891,15 @@ The [Deepgram](https://deepgram.com/) provider contains language model support f
 The Deepgram provider is available in the `@ai-sdk/deepgram` module. You can install it with
 
 <Tabs items={['pnpm', 'npm', 'yarn']}>
-  <Tab>
-    <Snippet text="pnpm add @ai-sdk/deepgram" dark />
-  </Tab>
-  <Tab>
-    <Snippet text="npm install @ai-sdk/deepgram" dark />
-  </Tab>
-  <Tab>
-    <Snippet text="yarn add @ai-sdk/deepgram" dark />
-  </Tab>
+<Tab>
+<Snippet text="pnpm add @ai-sdk/deepgram" dark />
+</Tab>
+<Tab>
+<Snippet text="npm install @ai-sdk/deepgram" dark />
+</Tab>
+<Tab>
+<Snippet text="yarn add @ai-sdk/deepgram" dark />
+</Tab>
 </Tabs>
 
 ## Provider Instance
@@ -13073,8 +13065,10 @@ The following provider options are available:
 | `base` (+ [variants](https://developers.deepgram.com/docs/models-languages-overview#base))         | <Check size={18} /> | <Check size={18} /> | <Check size={18} /> | <Cross size={18} /> |
 
 ---
+
 title: Gladia
 description: Learn how to use the Gladia provider for the AI SDK.
+
 ---
 
 # Gladia Provider
@@ -13086,15 +13080,15 @@ The [Gladia](https://gladia.io/) provider contains language model support for th
 The Gladia provider is available in the `@ai-sdk/gladia` module. You can install it with
 
 <Tabs items={['pnpm', 'npm', 'yarn']}>
-  <Tab>
-    <Snippet text="pnpm add @ai-sdk/gladia" dark />
-  </Tab>
-  <Tab>
-    <Snippet text="npm install @ai-sdk/gladia" dark />
-  </Tab>
-  <Tab>
-    <Snippet text="yarn add @ai-sdk/gladia" dark />
-  </Tab>
+<Tab>
+<Snippet text="pnpm add @ai-sdk/gladia" dark />
+</Tab>
+<Tab>
+<Snippet text="npm install @ai-sdk/gladia" dark />
+</Tab>
+<Tab>
+<Snippet text="yarn add @ai-sdk/gladia" dark />
+</Tab>
 </Tabs>
 
 ## Provider Instance
@@ -13364,8 +13358,10 @@ The following provider options are available:
 | `Default` | <Check size={18} /> | <Check size={18} /> | <Check size={18} /> | <Check size={18} /> |
 
 ---
+
 title: LMNT
 description: Learn how to use the LMNT provider for the AI SDK.
+
 ---
 
 # LMNT Provider
@@ -13377,15 +13373,15 @@ The [LMNT](https://lmnt.com/) provider contains language model support for the L
 The LMNT provider is available in the `@ai-sdk/lmnt` module. You can install it with
 
 <Tabs items={['pnpm', 'npm', 'yarn']}>
-  <Tab>
-    <Snippet text="pnpm add @ai-sdk/lmnt" dark />
-  </Tab>
-  <Tab>
-    <Snippet text="npm install @ai-sdk/lmnt" dark />
-  </Tab>
-  <Tab>
-    <Snippet text="yarn add @ai-sdk/lmnt" dark />
-  </Tab>
+<Tab>
+<Snippet text="pnpm add @ai-sdk/lmnt" dark />
+</Tab>
+<Tab>
+<Snippet text="npm install @ai-sdk/lmnt" dark />
+</Tab>
+<Tab>
+<Snippet text="yarn add @ai-sdk/lmnt" dark />
+</Tab>
 </Tabs>
 
 ## Provider Instance
@@ -13501,8 +13497,10 @@ The LMNT provider accepts the following options:
 | `blizzard` | <Check size={18} /> |
 
 ---
+
 title: Google Generative AI
 description: Learn how to use Google Generative AI Provider.
+
 ---
 
 # Google Generative AI Provider
@@ -13515,15 +13513,15 @@ the [Google Generative AI](https://ai.google.dev/api/rest) APIs.
 The Google provider is available in the `@ai-sdk/google` module. You can install it with
 
 <Tabs items={['pnpm', 'npm', 'yarn']}>
-  <Tab>
-    <Snippet text="pnpm add @ai-sdk/google" dark />
-  </Tab>
-  <Tab>
-    <Snippet text="npm install @ai-sdk/google" dark />
-  </Tab>
-  <Tab>
-    <Snippet text="yarn add @ai-sdk/google" dark />
-  </Tab>
+<Tab>
+<Snippet text="pnpm add @ai-sdk/google" dark />
+</Tab>
+<Tab>
+<Snippet text="npm install @ai-sdk/google" dark />
+</Tab>
+<Tab>
+<Snippet text="yarn add @ai-sdk/google" dark />
+</Tab>
 </Tabs>
 
 ## Provider Instance
@@ -13587,9 +13585,7 @@ You can pass them as an options argument:
 
 ```ts
 const model = google('gemini-1.5-pro-latest', {
-  safetySettings: [
-    { category: 'HARM_CATEGORY_UNSPECIFIED', threshold: 'BLOCK_LOW_AND_ABOVE' },
-  ],
+  safetySettings: [{ category: 'HARM_CATEGORY_UNSPECIFIED', threshold: 'BLOCK_LOW_AND_ABOVE' }],
 });
 ```
 
@@ -13788,9 +13784,7 @@ import { google } from '@ai-sdk/google';
 import { GoogleAICacheManager } from '@google/generative-ai/server';
 import { generateText } from 'ai';
 
-const cacheManager = new GoogleAICacheManager(
-  process.env.GOOGLE_GENERATIVE_AI_API_KEY,
-);
+const cacheManager = new GoogleAICacheManager(process.env.GOOGLE_GENERATIVE_AI_API_KEY);
 
 // Supported models for explicit caching
 type GoogleModelCacheableId =
@@ -13846,9 +13840,7 @@ const { text, providerMetadata } = await generateText({
 
 // access the grounding metadata. Casting to the provider metadata type
 // is optional but provides autocomplete and type safety.
-const metadata = providerMetadata?.google as
-  | GoogleGenerativeAIProviderMetadata
-  | undefined;
+const metadata = providerMetadata?.google as GoogleGenerativeAIProviderMetadata | undefined;
 const groundingMetadata = metadata?.groundingMetadata;
 const safetyRatings = metadata?.safetyRatings;
 ```
@@ -14122,8 +14114,10 @@ The following optional settings are available for Google Generative AI embedding
 | `text-embedding-004` | 768                | <Check size={18} /> |
 
 ---
+
 title: Hume
 description: Learn how to use the Hume provider for the AI SDK.
+
 ---
 
 # Hume Provider
@@ -14135,15 +14129,15 @@ The [Hume](https://hume.ai/) provider contains language model support for the Hu
 The Hume provider is available in the `@ai-sdk/hume` module. You can install it with
 
 <Tabs items={['pnpm', 'npm', 'yarn']}>
-  <Tab>
-    <Snippet text="pnpm add @ai-sdk/hume" dark />
-  </Tab>
-  <Tab>
-    <Snippet text="npm install @ai-sdk/hume" dark />
-  </Tab>
-  <Tab>
-    <Snippet text="yarn add @ai-sdk/hume" dark />
-  </Tab>
+<Tab>
+<Snippet text="pnpm add @ai-sdk/hume" dark />
+</Tab>
+<Tab>
+<Snippet text="npm install @ai-sdk/hume" dark />
+</Tab>
+<Tab>
+<Snippet text="yarn add @ai-sdk/hume" dark />
+</Tab>
 </Tabs>
 
 ## Provider Instance
@@ -14222,8 +14216,10 @@ The following provider options are available:
 | `default` | <Check size={18} /> |
 
 ---
+
 title: Google Vertex AI
 description: Learn how to use the Google Vertex AI provider.
+
 ---
 
 # Google Vertex Provider
@@ -14243,18 +14239,18 @@ The Google Vertex provider for the [AI SDK](/docs) contains language model suppo
 The Google Vertex and Google Vertex Anthropic providers are both available in the `@ai-sdk/google-vertex` module. You can install it with
 
 <Tabs items={['pnpm', 'npm', 'yarn']}>
-  <Tab>
-    <Snippet text="pnpm add @ai-sdk/google-vertex" dark />
-  </Tab>
-  <Tab>
-    <Snippet text="npm install @ai-sdk/google-vertex" dark />
-  </Tab>
-  <Tab>
-    <Snippet
+<Tab>
+<Snippet text="pnpm add @ai-sdk/google-vertex" dark />
+</Tab>
+<Tab>
+<Snippet text="npm install @ai-sdk/google-vertex" dark />
+</Tab>
+<Tab>
+<Snippet
       text="yarn add @ai-sdk/google-vertex @google-cloud/vertexai"
       dark
     />
-  </Tab>
+</Tab>
 </Tabs>
 
 ## Google Vertex Provider Usage
@@ -14365,6 +14361,7 @@ You can use the following optional settings to customize the provider instance:
   `https://${location}-aiplatform.googleapis.com/v1/projects/${project}/locations/${location}/publishers/google`
 
 <a id="google-vertex-edge-runtime"></a>
+
 #### Edge Runtime
 
 Edge runtimes (like Vercel Edge Functions and Cloudflare Workers) are lightweight JavaScript environments that run closer to users at the network edge.
@@ -14469,9 +14466,7 @@ an options argument:
 
 ```ts
 const model = vertex('gemini-1.5-pro', {
-  safetySettings: [
-    { category: 'HARM_CATEGORY_UNSPECIFIED', threshold: 'BLOCK_LOW_AND_ABOVE' },
-  ],
+  safetySettings: [{ category: 'HARM_CATEGORY_UNSPECIFIED', threshold: 'BLOCK_LOW_AND_ABOVE' }],
 });
 ```
 
@@ -14663,9 +14658,7 @@ const { text, providerMetadata } = await generateText({
 
 // access the grounding metadata. Casting to the provider metadata type
 // is optional but provides autocomplete and type safety.
-const metadata = providerMetadata?.google as
-  | GoogleGenerativeAIProviderMetadata
-  | undefined;
+const metadata = providerMetadata?.google as GoogleGenerativeAIProviderMetadata | undefined;
 const groundingMetadata = metadata?.groundingMetadata;
 const safetyRatings = metadata?.safetyRatings;
 ```
@@ -15033,6 +15026,7 @@ You can use the following optional settings to customize the Google Vertex Anthr
   or to provide a custom fetch implementation for e.g. testing.
 
 <a id="google-vertex-anthropic-edge-runtime"></a>
+
 #### Edge Runtime
 
 Edge runtimes (like Vercel Edge Functions and Cloudflare Workers) are lightweight JavaScript environments that run closer to users at the network edge.
@@ -15288,15 +15282,7 @@ The Text Editor Tool provides functionality for viewing and editing text files:
 
 ```ts
 const textEditorTool = vertexAnthropic.tools.textEditor_20241022({
-  execute: async ({
-    command,
-    path,
-    file_text,
-    insert_line,
-    new_str,
-    old_str,
-    view_range,
-  }) => {
+  execute: async ({ command, path, file_text, insert_line, new_str, old_str, view_range }) => {
     // Implement your text editing logic here
     // Return the result of the text editing operation
   },
@@ -15333,9 +15319,7 @@ const computerTool = vertexAnthropic.tools.computer_20241022({
         // multipart result:
         return {
           type: 'image',
-          data: fs
-            .readFileSync('./data/screenshot-editor.png')
-            .toString('base64'),
+          data: fs.readFileSync('./data/screenshot-editor.png').toString('base64'),
         };
       }
       default: {
@@ -15385,8 +15369,10 @@ See also [Anthropic Model Comparison](https://docs.anthropic.com/en/docs/about-c
 </Note>
 
 ---
+
 title: Rev.ai
 description: Learn how to use the Rev.ai provider for the AI SDK.
+
 ---
 
 # Rev.ai Provider
@@ -15398,15 +15384,15 @@ The [Rev.ai](https://www.rev.ai/) provider contains language model support for t
 The Rev.ai provider is available in the `@ai-sdk/revai` module. You can install it with
 
 <Tabs items={['pnpm', 'npm', 'yarn']}>
-  <Tab>
-    <Snippet text="pnpm add @ai-sdk/revai" dark />
-  </Tab>
-  <Tab>
-    <Snippet text="npm install @ai-sdk/revai" dark />
-  </Tab>
-  <Tab>
-    <Snippet text="yarn add @ai-sdk/revai" dark />
-  </Tab>
+<Tab>
+<Snippet text="pnpm add @ai-sdk/revai" dark />
+</Tab>
+<Tab>
+<Snippet text="npm install @ai-sdk/revai" dark />
+</Tab>
+<Tab>
+<Snippet text="yarn add @ai-sdk/revai" dark />
+</Tab>
 </Tabs>
 
 ## Provider Instance
@@ -15588,8 +15574,10 @@ The following provider options are available:
 | `fusion`   | <Check size={18} /> | <Check size={18} /> | <Check size={18} /> | <Check size={18} /> |
 
 ---
+
 title: Mistral AI
 description: Learn how to use Mistral.
+
 ---
 
 # Mistral AI Provider
@@ -15601,15 +15589,15 @@ The [Mistral AI](https://mistral.ai/) provider contains language model support f
 The Mistral provider is available in the `@ai-sdk/mistral` module. You can install it with
 
 <Tabs items={['pnpm', 'npm', 'yarn']}>
-  <Tab>
-    <Snippet text="pnpm add @ai-sdk/mistral" dark />
-  </Tab>
-  <Tab>
-    <Snippet text="npm install @ai-sdk/mistral" dark />
-  </Tab>
-  <Tab>
-    <Snippet text="yarn add @ai-sdk/mistral" dark />
-  </Tab>
+<Tab>
+<Snippet text="pnpm add @ai-sdk/mistral" dark />
+</Tab>
+<Tab>
+<Snippet text="npm install @ai-sdk/mistral" dark />
+</Tab>
+<Tab>
+<Snippet text="yarn add @ai-sdk/mistral" dark />
+</Tab>
 </Tabs>
 
 ## Provider Instance
@@ -15700,7 +15688,7 @@ const result = await generateText({
         {
           type: 'file',
           data: new URL(
-            'https://github.com/vercel/ai/blob/main/examples/ai-core/data/ai.pdf?raw=true',
+            'https://github.com/vercel/ai/blob/main/examples/ai-core/data/ai.pdf?raw=true'
           ),
           mimeType: 'application/pdf',
         },
@@ -15768,8 +15756,10 @@ const model = mistral.embedding('mistral-embed');
 | `mistral-embed` | 1024               |
 
 ---
+
 title: Together.ai
 description: Learn how to use Together.ai's models with the AI SDK.
+
 ---
 
 # Together.ai Provider
@@ -15782,15 +15772,15 @@ The Together.ai provider is available via the `@ai-sdk/togetherai` module. You c
 install it with
 
 <Tabs items={['pnpm', 'npm', 'yarn']}>
-  <Tab>
-    <Snippet text="pnpm add @ai-sdk/togetherai" dark />
-  </Tab>
-  <Tab>
-    <Snippet text="npm install @ai-sdk/togetherai" dark />
-  </Tab>
-  <Tab>
-    <Snippet text="yarn add @ai-sdk/togetherai" dark />
-  </Tab>
+<Tab>
+<Snippet text="pnpm add @ai-sdk/togetherai" dark />
+</Tab>
+<Tab>
+<Snippet text="npm install @ai-sdk/togetherai" dark />
+</Tab>
+<Tab>
+<Snippet text="yarn add @ai-sdk/togetherai" dark />
+</Tab>
 </Tabs>
 
 ## Provider Instance
@@ -15959,8 +15949,10 @@ Together.ai image models support various image dimensions that vary by model. Co
 </Note>
 
 ---
+
 title: Cohere
 description: Learn how to use the Cohere provider for the AI SDK.
+
 ---
 
 # Cohere Provider
@@ -15972,15 +15964,15 @@ The [Cohere](https://cohere.com/) provider contains language and embedding model
 The Cohere provider is available in the `@ai-sdk/cohere` module. You can install it with
 
 <Tabs items={['pnpm', 'npm', 'yarn']}>
-  <Tab>
-    <Snippet text="pnpm add @ai-sdk/cohere" dark />
-  </Tab>
-  <Tab>
-    <Snippet text="npm install @ai-sdk/cohere" dark />
-  </Tab>
-  <Tab>
-    <Snippet text="yarn add @ai-sdk/cohere" dark />
-  </Tab>
+<Tab>
+<Snippet text="pnpm add @ai-sdk/cohere" dark />
+</Tab>
+<Tab>
+<Snippet text="npm install @ai-sdk/cohere" dark />
+</Tab>
+<Tab>
+<Snippet text="yarn add @ai-sdk/cohere" dark />
+</Tab>
 </Tabs>
 
 ## Provider Instance
@@ -16120,8 +16112,10 @@ The following optional settings are available for Cohere embedding models:
 | `embed-multilingual-v2.0`       | 768                  |
 
 ---
+
 title: Fireworks
 description: Learn how to use Fireworks models with the AI SDK.
+
 ---
 
 # Fireworks Provider
@@ -16133,15 +16127,15 @@ description: Learn how to use Fireworks models with the AI SDK.
 The Fireworks provider is available via the `@ai-sdk/fireworks` module. You can install it with
 
 <Tabs items={['pnpm', 'npm', 'yarn']}>
-  <Tab>
-    <Snippet text="pnpm add @ai-sdk/fireworks" dark />
-  </Tab>
-  <Tab>
-    <Snippet text="npm install @ai-sdk/fireworks" dark />
-  </Tab>
-  <Tab>
-    <Snippet text="yarn add @ai-sdk/fireworks" dark />
-  </Tab>
+<Tab>
+<Snippet text="pnpm add @ai-sdk/fireworks" dark />
+</Tab>
+<Tab>
+<Snippet text="npm install @ai-sdk/fireworks" dark />
+</Tab>
+<Tab>
+<Snippet text="yarn add @ai-sdk/fireworks" dark />
+</Tab>
 </Tabs>
 
 ## Provider Instance
@@ -16260,9 +16254,7 @@ const model = fireworks.completion('accounts/fireworks/models/firefunction-v1');
 You can create models that call the Fireworks embeddings API using the `.textEmbeddingModel()` factory method:
 
 ```ts
-const model = fireworks.textEmbeddingModel(
-  'accounts/fireworks/models/nomic-embed-text-v1',
-);
+const model = fireworks.textEmbeddingModel('accounts/fireworks/models/nomic-embed-text-v1');
 ```
 
 ## Image Models
@@ -16323,8 +16315,10 @@ support for these models:
 | `accounts/stability/models/sd3`        |
 
 ---
+
 title: DeepSeek
 description: Learn how to use DeepSeek's models with the AI SDK.
+
 ---
 
 # DeepSeek Provider
@@ -16338,15 +16332,15 @@ API keys can be obtained from the [DeepSeek Platform](https://platform.deepseek.
 The DeepSeek provider is available via the `@ai-sdk/deepseek` module. You can install it with:
 
 <Tabs items={['pnpm', 'npm', 'yarn']}>
-  <Tab>
-    <Snippet text="pnpm add @ai-sdk/deepseek" dark />
-  </Tab>
-  <Tab>
-    <Snippet text="npm install @ai-sdk/deepseek" dark />
-  </Tab>
-  <Tab>
-    <Snippet text="yarn add @ai-sdk/deepseek" dark />
-  </Tab>
+<Tab>
+<Snippet text="pnpm add @ai-sdk/deepseek" dark />
+</Tab>
+<Tab>
+<Snippet text="npm install @ai-sdk/deepseek" dark />
+</Tab>
+<Tab>
+<Snippet text="yarn add @ai-sdk/deepseek" dark />
+</Tab>
 </Tabs>
 
 ## Provider Instance
@@ -16465,8 +16459,10 @@ The metrics include:
 </Note>
 
 ---
+
 title: Cerebras
 description: Learn how to use Cerebras's models with the AI SDK.
+
 ---
 
 # Cerebras Provider
@@ -16480,15 +16476,15 @@ API keys can be obtained from the [Cerebras Platform](https://cloud.cerebras.ai)
 The Cerebras provider is available via the `@ai-sdk/cerebras` module. You can install it with:
 
 <Tabs items={['pnpm', 'npm', 'yarn']}>
-  <Tab>
-    <Snippet text="pnpm add @ai-sdk/cerebras" dark />
-  </Tab>
-  <Tab>
-    <Snippet text="npm install @ai-sdk/cerebras" dark />
-  </Tab>
-  <Tab>
-    <Snippet text="yarn add @ai-sdk/cerebras" dark />
-  </Tab>
+<Tab>
+<Snippet text="pnpm add @ai-sdk/cerebras" dark />
+</Tab>
+<Tab>
+<Snippet text="npm install @ai-sdk/cerebras" dark />
+</Tab>
+<Tab>
+<Snippet text="yarn add @ai-sdk/cerebras" dark />
+</Tab>
 </Tabs>
 
 ## Provider Instance
@@ -16562,8 +16558,10 @@ Cerebras language models can be used in the `streamText` function
 </Note>
 
 ---
+
 title: Replicate
 description: Learn how to use Replicate models with the AI SDK.
+
 ---
 
 # Replicate Provider
@@ -16576,15 +16574,15 @@ It is a popular choice for running image generation models.
 The Replicate provider is available via the `@ai-sdk/replicate` module. You can install it with
 
 <Tabs items={['pnpm', 'npm', 'yarn']}>
-  <Tab>
-    <Snippet text="pnpm add ai @ai-sdk/replicate" dark />
-  </Tab>
-  <Tab>
-    <Snippet text="npm install ai @ai-sdk/replicate" dark />
-  </Tab>
-  <Tab>
-    <Snippet text="yarn add ai @ai-sdk/replicate" dark />
-  </Tab>
+<Tab>
+<Snippet text="pnpm add ai @ai-sdk/replicate" dark />
+</Tab>
+<Tab>
+<Snippet text="npm install ai @ai-sdk/replicate" dark />
+</Tab>
+<Tab>
+<Snippet text="yarn add ai @ai-sdk/replicate" dark />
+</Tab>
 </Tabs>
 
 ## Provider Instance
@@ -16705,7 +16703,7 @@ import { experimental_generateImage as generateImage } from 'ai';
 
 const { image } = await generateImage({
   model: replicate.image(
-    'bytedance/sdxl-lightning-4step:5599ed30703defd1d160a25a63321b4dec97101d98b4674bcc56e41f62f35637',
+    'bytedance/sdxl-lightning-4step:5599ed30703defd1d160a25a63321b4dec97101d98b4674bcc56e41f62f35637'
   ),
   prompt: 'The Loch Ness Monster getting a manicure',
 });
@@ -16714,8 +16712,10 @@ const { image } = await generateImage({
 For more details, see the [Replicate models page](https://replicate.com/explore).
 
 ---
+
 title: Perplexity
 description: Learn how to use Perplexity's Sonar API with the AI SDK.
+
 ---
 
 # Perplexity Provider
@@ -16729,15 +16729,15 @@ API keys can be obtained from the [Perplexity Platform](https://docs.perplexity.
 The Perplexity provider is available via the `@ai-sdk/perplexity` module. You can install it with:
 
 <Tabs items={['pnpm', 'npm', 'yarn']}>
-  <Tab>
-    <Snippet text="pnpm add @ai-sdk/perplexity" dark />
-  </Tab>
-  <Tab>
-    <Snippet text="npm install @ai-sdk/perplexity" dark />
-  </Tab>
-  <Tab>
-    <Snippet text="yarn add @ai-sdk/perplexity" dark />
-  </Tab>
+<Tab>
+<Snippet text="pnpm add @ai-sdk/perplexity" dark />
+</Tab>
+<Tab>
+<Snippet text="npm install @ai-sdk/perplexity" dark />
+</Tab>
+<Tab>
+<Snippet text="yarn add @ai-sdk/perplexity" dark />
+</Tab>
 </Tabs>
 
 ## Provider Instance
@@ -16863,8 +16863,10 @@ You can enable image responses by setting `return_images: true` in the provider 
 </Note>
 
 ---
+
 title: Luma
 description: Learn how to use Luma AI models with the AI SDK.
+
 ---
 
 # Luma Provider
@@ -16876,15 +16878,15 @@ description: Learn how to use Luma AI models with the AI SDK.
 The Luma provider is available via the `@ai-sdk/luma` module. You can install it with
 
 <Tabs items={['pnpm', 'npm', 'yarn']}>
-  <Tab>
-    <Snippet text="pnpm add @ai-sdk/luma" dark />
-  </Tab>
-  <Tab>
-    <Snippet text="npm install @ai-sdk/luma" dark />
-  </Tab>
-  <Tab>
-    <Snippet text="yarn add @ai-sdk/luma" dark />
-  </Tab>
+<Tab>
+<Snippet text="pnpm add @ai-sdk/luma" dark />
+</Tab>
+<Tab>
+<Snippet text="npm install @ai-sdk/luma" dark />
+</Tab>
+<Tab>
+<Snippet text="yarn add @ai-sdk/luma" dark />
+</Tab>
 </Tabs>
 
 ## Provider Instance
@@ -17107,8 +17109,10 @@ await generateImage({
 For more details about Luma's capabilities and features, visit the [Luma Image Generation documentation](https://docs.lumalabs.ai/docs/image-generation).
 
 ---
+
 title: ElevenLabs
 description: Learn how to use the ElevenLabs provider for the AI SDK.
+
 ---
 
 # ElevenLabs Provider
@@ -17120,15 +17124,15 @@ The [ElevenLabs](https://elevenlabs.io/) provider contains language model suppor
 The ElevenLabs provider is available in the `@ai-sdk/elevenlabs` module. You can install it with
 
 <Tabs items={['pnpm', 'npm', 'yarn']}>
-  <Tab>
-    <Snippet text="pnpm add @ai-sdk/elevenlabs" dark />
-  </Tab>
-  <Tab>
-    <Snippet text="npm install @ai-sdk/elevenlabs" dark />
-  </Tab>
-  <Tab>
-    <Snippet text="yarn add @ai-sdk/elevenlabs" dark />
-  </Tab>
+<Tab>
+<Snippet text="pnpm add @ai-sdk/elevenlabs" dark />
+</Tab>
+<Tab>
+<Snippet text="npm install @ai-sdk/elevenlabs" dark />
+</Tab>
+<Tab>
+<Snippet text="yarn add @ai-sdk/elevenlabs" dark />
+</Tab>
 </Tabs>
 
 ## Provider Instance
@@ -17239,8 +17243,10 @@ The following provider options are available:
 | `scribe_v1_experimental` | <Check size={18} /> | <Check size={18} /> | <Check size={18} /> | <Check size={18} /> |
 
 ---
+
 title: LM Studio
 description: Use the LM Studio OpenAI compatible API with the AI SDK.
+
 ---
 
 # LM Studio Provider
@@ -17256,15 +17262,15 @@ The LM Studio provider is available via the `@ai-sdk/openai-compatible` module a
 You can install it with
 
 <Tabs items={['pnpm', 'npm', 'yarn']}>
-  <Tab>
-    <Snippet text="pnpm add @ai-sdk/openai-compatible" dark />
-  </Tab>
-  <Tab>
-    <Snippet text="npm install @ai-sdk/openai-compatible" dark />
-  </Tab>
-  <Tab>
-    <Snippet text="yarn add @ai-sdk/openai-compatible" dark />
-  </Tab>
+<Tab>
+<Snippet text="pnpm add @ai-sdk/openai-compatible" dark />
+</Tab>
+<Tab>
+<Snippet text="npm install @ai-sdk/openai-compatible" dark />
+</Tab>
+<Tab>
+<Snippet text="yarn add @ai-sdk/openai-compatible" dark />
+</Tab>
 </Tabs>
 
 ## Provider Instance
@@ -17367,17 +17373,15 @@ const lmstudio = createOpenAICompatible({
 // It is sorted in the same order as the input values.
 const { embeddings } = await embedMany({
   model: lmstudio.textEmbeddingModel('text-embedding-nomic-embed-text-v1.5'),
-  values: [
-    'sunny day at the beach',
-    'rainy afternoon in the city',
-    'snowy night in the mountains',
-  ],
+  values: ['sunny day at the beach', 'rainy afternoon in the city', 'snowy night in the mountains'],
 });
 ```
 
 ---
+
 title: NVIDIA NIM
 description: Use NVIDIA NIM OpenAI compatible API with the AI SDK.
+
 ---
 
 # NVIDIA NIM Provider
@@ -17390,15 +17394,15 @@ The NVIDIA NIM provider is available via the `@ai-sdk/openai-compatible` module 
 You can install it with:
 
 <Tabs items={['pnpm', 'npm', 'yarn']}>
-  <Tab>
-    <Snippet text="pnpm add @ai-sdk/openai-compatible" dark />
-  </Tab>
-  <Tab>
-    <Snippet text="npm install @ai-sdk/openai-compatible" dark />
-  </Tab>
-  <Tab>
-    <Snippet text="yarn add @ai-sdk/openai-compatible" dark />
-  </Tab>
+<Tab>
+<Snippet text="pnpm add @ai-sdk/openai-compatible" dark />
+</Tab>
+<Tab>
+<Snippet text="npm install @ai-sdk/openai-compatible" dark />
+</Tab>
+<Tab>
+<Snippet text="yarn add @ai-sdk/openai-compatible" dark />
+</Tab>
 </Tabs>
 
 ## Provider Instance
@@ -17498,8 +17502,10 @@ NIM language models can also be used with other AI SDK functions like `generateO
 </Note>
 
 ---
+
 title: OpenAI Compatible Providers
 description: Use OpenAI compatible providers with the AI SDK.
+
 ---
 
 # OpenAI Compatible Providers
@@ -17521,15 +17527,15 @@ The general setup and provider instance creation is the same for all of these pr
 The OpenAI Compatible provider is available via the `@ai-sdk/openai-compatible` module. You can install it with:
 
 <Tabs items={['pnpm', 'npm', 'yarn']}>
-  <Tab>
-    <Snippet text="pnpm add @ai-sdk/openai-compatible" dark />
-  </Tab>
-  <Tab>
-    <Snippet text="npm install @ai-sdk/openai-compatible" dark />
-  </Tab>
-  <Tab>
-    <Snippet text="yarn add @ai-sdk/openai-compatible" dark />
-  </Tab>
+<Tab>
+<Snippet text="pnpm add @ai-sdk/openai-compatible" dark />
+</Tab>
+<Tab>
+<Snippet text="npm install @ai-sdk/openai-compatible" dark />
+</Tab>
+<Tab>
+<Snippet text="yarn add @ai-sdk/openai-compatible" dark />
+</Tab>
 </Tabs>
 
 ## Provider Instance
@@ -17619,10 +17625,7 @@ type ExampleCompletionModelIds =
   | 'Qwen/Qwen2.5-Coder-32B-Instruct'
   | (string & {});
 
-type ExampleEmbeddingModelIds =
-  | 'BAAI/bge-large-en-v1.5'
-  | 'bert-base-uncased'
-  | (string & {});
+type ExampleEmbeddingModelIds = 'BAAI/bge-large-en-v1.5' | 'bert-base-uncased' | (string & {});
 
 const model = createOpenAICompatible<
   ExampleChatModelIds,
@@ -17743,7 +17746,7 @@ const myMetadataExtractor: MetadataExtractor = {
 
     return {
       // Process each chunk's raw data
-      processChunk: parsedChunk => {
+      processChunk: (parsedChunk) => {
         if (parsedChunk.server_timing) {
           accumulatedData.timing.push(parsedChunk.server_timing);
         }

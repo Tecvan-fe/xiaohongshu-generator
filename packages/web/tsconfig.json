@@ -3,7 +3,8 @@
   "compilerOptions": {
     "composite": true,
     "lib": ["ES2020", "DOM", "DOM.Iterable"],
-    "types": ["vite/client"]
+    "types": ["vite/client"],
+    "outDir": "./dist"
   },
   "include": ["src/**/*", "src/**/*.ts", "src/**/*.tsx"],
   "exclude": ["dist", "node_modules"],

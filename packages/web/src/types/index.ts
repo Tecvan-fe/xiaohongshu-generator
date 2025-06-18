@@ -1,38 +1,17 @@
-// 基础类型定义
-export interface ProcessedParagraph {
-  id: string;
-  content: string;
-  summary: string;
-  keywords: string[];
-  order: number;
-}
+// 导入API类型定义以保持一致性
+import type {
+  ProcessedParagraph as ApiProcessedParagraph,
+  TitleOptions as ApiTitleOptions,
+  StylePreset as ApiStylePreset,
+  CardData as ApiCardData,
+  ApiResponse,
+} from '../api/types';
 
-export interface TitleOptions {
-  titles: string[];
-  selectedIndex?: number;
-}
-
-export interface StylePreset {
-  name: string;
-  template: string;
-  backgroundColor: string;
-  textColor: string;
-  accentColor: string;
-  fontFamily: string;
-  fontSize: number;
-  borderRadius: number;
-  padding: number;
-}
-
-export interface CardData {
-  id: string;
-  title: string;
-  summary: string;
-  emoji: string;
-  tags: string[];
-  stylePreset: StylePreset;
-  paragraphId: string;
-}
+// 使用API类型作为基础类型
+export type ProcessedParagraph = ApiProcessedParagraph;
+export type TitleOptions = ApiTitleOptions;
+export type StylePreset = ApiStylePreset;
+export type CardData = ApiCardData;
 
 // 应用状态类型
 export interface AppState {
@@ -82,23 +61,7 @@ export interface PreviewSectionProps {
   onExport: (format: 'markdown' | 'json' | 'images') => void;
 }
 
-// API响应类型
-export interface AnalyzeResponse {
-  success: boolean;
-  data?: {
-    paragraphs: ProcessedParagraph[];
-  };
-  error?: string;
-}
-
-export interface TitleResponse {
-  success: boolean;
-  data?: TitleOptions;
-  error?: string;
-}
-
-export interface CardResponse {
-  success: boolean;
-  data?: CardData[];
-  error?: string;
-}
+// API响应类型（使用通用的ApiResponse类型）
+export type AnalyzeResponse = ApiResponse<ProcessedParagraph[]>;
+export type TitleResponse = ApiResponse<TitleOptions>;
+export type CardResponse = ApiResponse<CardData[]>;

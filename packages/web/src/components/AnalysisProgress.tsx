@@ -33,7 +33,7 @@ export const AnalysisProgress: React.FC<AnalysisProgressProps> = ({
     {
       key: 'analyze',
       title: '内容分析',
-      description: '智能划分段落，提取关键信息',
+      description: '智能转换为小红书风格，提取关键信息',
       icon: <Brain className="h-5 w-5" />,
       completed: paragraphs.length > 0,
       active: isAnalyzing,
@@ -41,7 +41,7 @@ export const AnalysisProgress: React.FC<AnalysisProgressProps> = ({
     {
       key: 'titles',
       title: '标题生成',
-      description: '生成吸引人的小红书风格标题',
+      description: '创作5-12字爆款小红书标题',
       icon: <Sparkles className="h-5 w-5" />,
       completed: !!titles,
       active: isGeneratingTitles,
@@ -49,7 +49,7 @@ export const AnalysisProgress: React.FC<AnalysisProgressProps> = ({
     {
       key: 'cards',
       title: '卡片制作',
-      description: '生成精美的可视卡片',
+      description: '生成精美的小红书图文卡片',
       icon: <Palette className="h-5 w-5" />,
       completed: cards.length > 0,
       active: isGeneratingCards,

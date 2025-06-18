@@ -4,6 +4,7 @@ import { useAppStore } from './store/app-store';
 import { XiaohongshuChat } from './components/ui/v0-ai-chat';
 import { ChatResponse } from './components/ui/chat-response';
 import { Card, CardContent } from './components/ui/card';
+import { downloadMarkdown, downloadJson, downloadCardsAsImages } from './api';
 
 function App() {
   const {
@@ -18,14 +19,20 @@ function App() {
     isGeneratingCards,
     currentStep,
     error,
+    languageStyle,
 
     // Actions
     setInputText,
     setUploadedFile,
     setError,
-    analyzeContent,
+    setLanguageStyle,
+    analyzeContentFlow,
+    cancelOperation,
     reset,
   } = useAppStore();
+
+  // 检查是否有正在进行的操作
+  const isProcessing = isAnalyzing || isGeneratingTitles || isGeneratingCards;
 
   // 处理文件上传
   const handleFileUpload = (file: File) => {
@@ -45,30 +52,27 @@ function App() {
   // 处理导出
   const handleExport = async (format: 'markdown' | 'json' | 'images') => {
     try {
-      const response = await fetch('/api/export', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          format,
+      const selectedTitle = titles?.titles[titles.selectedIndex || 0] || '未命名内容';
+
+      if (format === 'markdown') {
+        await downloadMarkdown({
+          title: selectedTitle,
           cards,
-          title: titles?.titles[0],
-        }),
-      });
-
-      if (!response.ok) {
-        throw new Error('导出失败');
+        });
+      } else if (format === 'json') {
+        await downloadJson({
+          title: selectedTitle,
+          cards,
+          metadata: {
+            createdAt: new Date().toISOString(),
+            version: '1.0.0',
+            totalCards: cards.length,
+          },
+        });
+      } else if (format === 'images') {
+        // 使用新的图片导出功能
+        await downloadCardsAsImages(cards, selectedTitle);
       }
-
-      // 处理文件下载
-      const blob = await response.blob();
-      const url = window.URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `xiaohongshu-content.${format === 'images' ? 'zip' : format}`;
-      document.body.appendChild(a);
-      a.click();
-      window.URL.revokeObjectURL(url);
-      document.body.removeChild(a);
     } catch (error) {
       console.error('导出失败:', error);
       setError('导出失败，请稍后重试');
@@ -100,10 +104,12 @@ function App() {
               <XiaohongshuChat
                 onSubmit={(text) => {
                   setInputText(text);
-                  analyzeContent();
+                  analyzeContentFlow();
                 }}
                 onFileUpload={handleFileUpload}
-                isLoading={isAnalyzing}
+                onStyleChange={setLanguageStyle}
+                selectedStyle={languageStyle}
+                isLoading={isProcessing}
                 placeholder="描述您想要转换为小红书图文的内容...
 
 例如：
@@ -133,6 +139,7 @@ function App() {
                 cards={cards}
                 onExport={handleExport}
                 onReset={reset}
+                onCancel={isProcessing ? cancelOperation : undefined}
               />
             </div>
           )}
@@ -142,7 +149,7 @@ function App() {
         <footer className="mt-16 text-center text-sm text-gray-500">
           <div className="space-y-2">
             <p>✨ 由 AI 驱动的小红书内容创作工具</p>
-            <p>支持文本分析 • 自动生成卡片 • 多格式导出</p>
+            <p>支持风格转换 • 爆款标题 • 精美卡片 • 智能数量优化</p>
           </div>
         </footer>
       </div>

@@ -16,7 +16,11 @@ import {
   Sparkles,
   FileText,
   Camera,
+  Upload,
+  X,
 } from 'lucide-react';
+import { LanguageStyleSelector } from './language-style-selector';
+import type { LanguageStyle } from '../../api/types';
 
 interface UseAutoResizeTextareaProps {
   minHeight: number;
@@ -69,8 +73,10 @@ function useAutoResizeTextarea({ minHeight, maxHeight }: UseAutoResizeTextareaPr
 }
 
 interface XiaohongshuChatProps {
-  onSubmit?: (text: string) => void;
-  onFileUpload?: (file: File) => void;
+  onSubmit: (text: string) => void;
+  onFileUpload: (file: File) => void;
+  onStyleChange: (style: LanguageStyle) => void;
+  selectedStyle: LanguageStyle;
   isLoading?: boolean;
   placeholder?: string;
 }
@@ -78,6 +84,8 @@ interface XiaohongshuChatProps {
 export function XiaohongshuChat({
   onSubmit,
   onFileUpload,
+  onStyleChange,
+  selectedStyle,
   isLoading = false,
   placeholder = '描述您想要转换为小红书图文的内容...',
 }: XiaohongshuChatProps) {
@@ -136,6 +144,10 @@ export function XiaohongshuChat({
       </div>
 
       <div className="w-full">
+        <div className="mb-6">
+          <LanguageStyleSelector selectedStyle={selectedStyle} onStyleChange={onStyleChange} />
+        </div>
+
         <div className="relative bg-white rounded-2xl border-2 border-gray-200 shadow-xl hover:shadow-2xl transition-shadow duration-300">
           <div className="overflow-y-auto">
             <Textarea

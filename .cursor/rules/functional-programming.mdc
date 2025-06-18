@@ -1,0 +1,173 @@
+---
+description:
+globs:
+alwaysApply: false
+---
+# 函数式编程优先规则
+
+## 核心原则
+
+在所有TypeScript/JavaScript代码中，优先使用函数式编程风格而不是类（class）风格。
+
+## 推荐做法
+
+### ✅ 优先使用函数式风格
+
+```typescript
+// 推荐：使用函数和对象字面量
+export const apiService = {
+  async fetchData(url: string) {
+    return fetch(url);
+  },
+  
+  processData(data: any[]) {
+    return data.map(item => transform(item));
+  }
+};
+
+// 推荐：使用纯函数
+export const createUser = (name: string, email: string) => ({
+  id: generateId(),
+  name,
+  email,
+  createdAt: new Date()
+});
+
+// 推荐：使用高阶函数
+export const withLogging = <T extends (...args: any[]) => any>(fn: T) => {
+  return ((...args: Parameters<T>) => {
+    console.log('Calling function with args:', args);
+    return fn(...args);
+  }) as T;
+};
+```
+
+### ❌ 避免不必要的类
+
+```typescript
+// 避免：简单的数据结构不需要类
+class User {
+  constructor(
+    public name: string,
+    public email: string
+  ) {}
+}
+
+// 避免：只有静态方法的类
+class MathUtils {
+  static add(a: number, b: number) {
+    return a + b;
+  }
+}
+```
+
+## 具体指导
+
+### 1. API客户端实现
+
+```typescript
+// 推荐：函数式API客户端
+export const createApiClient = (baseURL: string) => {
+  const request = async (endpoint: string, options?: RequestInit) => {
+    const response = await fetch(`${baseURL}${endpoint}`, options);
+    return response.json();
+  };
+
+  return {
+    get: (endpoint: string) => request(endpoint),
+    post: (endpoint: string, data: any) => 
+      request(endpoint, {
+        method: 'POST',
+        body: JSON.stringify(data),
+        headers: { 'Content-Type': 'application/json' }
+      })
+  };
+};
+```
+
+### 2. 状态管理
+
+```typescript
+// 推荐：使用函数式状态管理
+export const createStore = <T>(initialState: T) => {
+  let state = initialState;
+  const listeners: ((state: T) => void)[] = [];
+
+  return {
+    getState: () => state,
+    setState: (newState: T) => {
+      state = newState;
+      listeners.forEach(listener => listener(state));
+    },
+    subscribe: (listener: (state: T) => void) => {
+      listeners.push(listener);
+      return () => {
+        const index = listeners.indexOf(listener);
+        if (index > -1) listeners.splice(index, 1);
+      };
+    }
+  };
+};
+```
+
+### 3. 组合和模块化
+
+```typescript
+// 推荐：函数组合
+export const pipe = <T>(...fns: Array<(arg: T) => T>) => 
+  (value: T) => fns.reduce((acc, fn) => fn(acc), value);
+
+export const compose = <T>(...fns: Array<(arg: T) => T>) => 
+  (value: T) => fns.reduceRight((acc, fn) => fn(acc), value);
+
+// 使用示例
+const processUserData = pipe(
+  validateUser,
+  normalizeUser,
+  enrichUser
+);
+```
+
+## 例外情况
+
+以下情况可以考虑使用类：
+
+1. **React组件**：当需要使用生命周期方法时
+2. **错误类**：继承Error类创建自定义错误
+3. **复杂的数据结构**：需要封装复杂行为和状态的情况
+4. **第三方库要求**：某些库明确要求类的使用
+
+```typescript
+// 允许：自定义错误类
+export class ApiError extends Error {
+  constructor(
+    message: string,
+    public statusCode: number,
+    public response?: any
+  ) {
+    super(message);
+    this.name = 'ApiError';
+  }
+}
+
+// 允许：复杂状态管理（当函数式方案过于复杂时）
+export class StateMachine {
+  private currentState: string;
+  private transitions: Map<string, Map<string, string>>;
+  
+  constructor(initialState: string) {
+    this.currentState = initialState;
+    this.transitions = new Map();
+  }
+  
+  // 复杂的状态转换逻辑...
+}
+```
+
+## 总结
+
+- 默认选择函数式编程风格
+- 使用纯函数、高阶函数和函数组合
+- 优先考虑不可变性和函数式数据处理
+- 只在有明确需要时才使用类
+- 保持代码简洁、可测试和可组合
