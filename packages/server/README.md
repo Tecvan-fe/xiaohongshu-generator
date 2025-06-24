@@ -415,3 +415,60 @@ pnpm test
 - **文件处理**: Multer + pdf-parse
 - **日志**: 自定义Logger
 - **测试**: Vitest + Supertest
+
+---
+
+## 📋 API 接口简要说明
+
+### 基础服务
+
+- `GET /health` - 服务健康检查
+- `GET /api` - 获取API基础信息和可用端点
+
+### 内容处理 (`/api/content`)
+
+- `POST /api/content/parse-text` - 解析纯文本内容，提取段落结构和元数据
+- `POST /api/content/parse-pdf` - 解析PDF文件，提取文本内容并分析结构
+
+### AI 分析 (`/api/ai`)
+
+- `POST /api/ai/analyze` - 使用AI分析文本内容，生成小红书风格的段落卡片
+- `POST /api/ai/titles` - 根据文本内容生成多个小红书风格的标题选项
+- `POST /api/ai/cards` - 将分析后的段落数据转换为可视化卡片格式
+
+### 内容导出 (`/api/export`)
+
+- `POST /api/export/markdown` - 将卡片数据导出为Markdown格式文件
+- `POST /api/export/json` - 将卡片数据导出为JSON格式文件
+
+### 核心特性
+
+- 🔒 **安全**: CORS配置、请求限流、文件类型验证
+- 🎨 **多风格**: 支持6种语言风格（小红书、简约、科学、商务、日常、文艺）
+- 📄 **文件支持**: PDF、文本、Markdown文件上传解析
+- 🤖 **AI增强**: OpenAI GPT-4驱动的智能内容分析和生成
+- 📊 **数据分析**: 自动识别内容类型、统计字数、评估阅读时间
+
+---
+
+## 🔄 接口使用流程图
+
+```mermaid
+flowchart LR
+    A["📝 内容输入<br/>文本或PDF"] --> B["🤖 AI分析<br/>/api/ai/analyze"]
+    B --> C["📋 生成标题<br/>/api/ai/titles"]
+    C --> D["📤 导出内容<br/>/api/export/*"]
+    D --> E["✅ 完成"]
+
+    style A fill:#e1f5fe
+    style B fill:#f3e5f5
+    style C fill:#fff3e0
+    style E fill:#e8f5e8
+```
+
+### 📝 使用流程
+
+1. **内容输入** - 提交文本或上传PDF文件
+2. **AI分析** - 生成小红书风格卡片内容
+3. **标题生成** - 获取多个吸引人的标题选项
+4. **内容导出** - 选择格式完成导出
