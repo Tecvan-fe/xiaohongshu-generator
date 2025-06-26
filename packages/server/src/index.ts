@@ -3,6 +3,8 @@ import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
+import path from 'path';
+import fs from 'fs';
 import { createLogger } from '@xiaohongshu/logger';
 import { validateEnvironment } from '@xiaohongshu/utils';
 import { errorHandler } from './middleware/error-handler';
@@ -13,7 +15,7 @@ import { apiRoutes } from './routes';
 const envValidation = validateEnvironment(process.env);
 if (!envValidation.isValid) {
   console.error('环境变量验证失败:');
-  envValidation.errors.forEach(error => console.error(`  - ${error}`));
+  envValidation.errors.forEach((error) => console.error(`  - ${error}`));
   process.exit(1);
 }
 
@@ -35,10 +37,12 @@ const port = parseInt(process.env.PORT || '3001', 10);
 app.use(helmet());
 
 // CORS配置
-app.use(cors({
-  origin: process.env.CORS_ORIGIN || 'http://localhost:5173',
-  credentials: true,
-}));
+app.use(
+  cors({
+    origin: process.env.CORS_ORIGIN || 'http://localhost:5173',
+    credentials: true,
+  })
+);
 
 // 速率限制
 const limiter = rateLimit({
@@ -70,13 +74,33 @@ app.get('/health', (req, res) => {
 // API路由
 app.use('/api', apiRoutes);
 
-// 404处理
-app.use('*', (req, res) => {
-  res.status(404).json({
-    success: false,
-    error: '接口不存在',
-    path: req.originalUrl,
-  });
+// 静态文件服务
+const publicPath = path.join(__dirname, '../public');
+app.use(express.static(publicPath));
+
+// SPA路由支持 - 对于非API请求，返回index.html
+app.get('*', (req, res) => {
+  // 跳过API路由
+  if (req.path.startsWith('/api')) {
+    return res.status(404).json({
+      success: false,
+      error: '接口不存在',
+      path: req.originalUrl,
+    });
+  }
+
+  const indexPath = path.join(publicPath, 'index.html');
+
+  // 检查index.html是否存在
+  if (fs.existsSync(indexPath)) {
+    res.sendFile(indexPath);
+  } else {
+    res.status(404).json({
+      success: false,
+      error: '前端资源未找到，请先运行构建脚本',
+      path: req.originalUrl,
+    });
+  }
 });
 
 // 错误处理
@@ -100,4 +124,4 @@ process.on('SIGTERM', () => {
 process.on('SIGINT', () => {
   logger.info('收到SIGINT信号，开始优雅关闭...');
   process.exit(0);
-}); 
+});

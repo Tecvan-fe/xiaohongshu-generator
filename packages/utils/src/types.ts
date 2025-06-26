@@ -101,28 +101,6 @@ export interface ApiError {
   details?: Record<string, any>;
 }
 
-// 支持的AI提供商
-export const AI_PROVIDERS = {
-  OPENAI: 'openai',
-  GEMINI: 'gemini',
-  CLAUDE: 'claude',
-} as const;
-
-// 支持的文件类型
-export const SUPPORTED_FILE_TYPES = {
-  PDF: 'application/pdf',
-  TEXT: 'text/plain',
-  MARKDOWN: 'text/markdown',
-} as const;
-
-// SVG卡片模板
-export const CARD_TEMPLATES = {
-  MINIMAL: 'minimal',
-  COLORFUL: 'colorful',
-  ELEGANT: 'elegant',
-  PLAYFUL: 'playful',
-} as const;
-
 // 语言风格类型
 export const LANGUAGE_STYLES = {
   MINIMAL: 'minimal',

@@ -21,9 +21,9 @@ const LogLevels: Record<LogLevel, { priority: number; color: string; label: stri
   debug: { priority: 3, color: Colors.cyan, label: 'DEBUG' },
 };
 
-// 环境检测
+// 环境检测 - 只检测Node.js环境
 const isNode = typeof process !== 'undefined' && process.versions?.node;
-const isBrowser = typeof window !== 'undefined';
+const isBrowser = !isNode;
 
 export class Logger {
   private config: LoggerConfig;
@@ -32,10 +32,10 @@ export class Logger {
 
   constructor(config: LoggerConfig) {
     this.config = {
-      level: 'info',
       enableConsole: true,
       enableFile: false,
       ...config,
+      level: config.level || 'info',
     };
 
     // 动态导入Node.js模块（仅在Node.js环境中）

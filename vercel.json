@@ -1,0 +1,22 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "framework": null,
+  "version": 2,
+  "builds": [
+    {
+      "src": "packages/server/dist/bundle.js",
+      "use": "@vercel/node"
+    },
+    {
+      "src": "packages/server/public/**",
+      "use": "@vercel/static"
+    }
+  ],
+  "routes": [
+    { "src": "/api/(.*)", "dest": "packages/server/dist/bundle.js" },
+    { "src": "/health", "dest": "packages/server/dist/bundle.js" },
+    { "src": "/(.*)", "dest": "packages/server/public/$1" },
+    { "handle": "filesystem" },
+    { "src": "/(.*)", "dest": "packages/server/public/index.html" }
+  ]
+}

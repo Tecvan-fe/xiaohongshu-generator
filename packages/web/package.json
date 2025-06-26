@@ -12,6 +12,7 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
+    "vercel-build": "pnpm build",
     "preview": "vite preview",
     "clean": "rm -rf dist"
   },

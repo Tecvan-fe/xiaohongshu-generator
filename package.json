@@ -17,6 +17,7 @@
     "dev:server": "pnpm --filter @xiaohongshu/server dev",
     "build:web": "pnpm --filter @xiaohongshu/web build",
     "build:server": "pnpm --filter @xiaohongshu/server build",
+    "build:deploy": "./packages/server/build.sh",
     "start": "pnpm --filter @xiaohongshu/server start"
   },
   "devDependencies": {

@@ -9,3 +9,4 @@ dist
 .cursor/rules/_*.mdc
 
 *.tsbuildinfo
+.vercel
